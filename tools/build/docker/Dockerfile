@@ -1,6 +1,6 @@
 # DOCKER-VERSION 0.3.4
 FROM        alpine:3.20
-LABEL       git="https://github.com/Difegue/LANraragi"
+LABEL       git="https://github.com/Reiyy/LANraragi_CN"
 ARG INSTALL_PARAMETER
 
 ENV S6_KEEP_ENV 1
@@ -27,7 +27,7 @@ EXPOSE 3000
 # Enable UTF-8 (might not do anything extra on alpine tho)
 ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 \
     # rootless user id
-    LRR_UID=9001 LRR_GID=9001 \
+    LRR_UID=0 LRR_GID=0 \
     # Environment variables overridable by the user on container deployment
     LRR_NETWORK=http://*:3000 \
     # extra variables
@@ -39,33 +39,33 @@ ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8 \
     # Attempt to fix file permissions automatically
     LRR_AUTOFIX_PERMISSIONS=1
 
-RUN \
-  if [ $(getent group ${LRR_GID}) ]; then \
-    adduser -D -u ${LRR_UID} koyomi; \
-  else \
-    addgroup -g ${LRR_GID} koyomi && \
-    adduser -D -u ${LRR_UID} -G koyomi koyomi; \
-fi
+# RUN \
+#   if [ $(getent group ${LRR_GID}) ]; then \
+#     adduser -D -u ${LRR_UID} koyomi; \
+#   else \
+#     addgroup -g ${LRR_GID} koyomi && \
+#     adduser -D -u ${LRR_UID} -G koyomi koyomi; \
+# fi
 
-WORKDIR /home/koyomi/lanraragi
+WORKDIR /root/lanraragi
 
 #Copy cpanfile and install script before copying the entire context
 #This allows for Docker cache to preserve cpan dependencies
-COPY --chown=koyomi:koyomi /tools/cpanfile /tools/install.pl /tools/build/docker/install-everything.sh tools/
-COPY --chown=koyomi:koyomi /package.json package.json
-COPY --chown=koyomi:koyomi /package-lock.json package-lock.json
+COPY --chown=root:root /tools/cpanfile /tools/install.pl /tools/build/docker/install-everything.sh tools/
+COPY --chown=root:root /package.json package.json
+COPY --chown=root:root /package-lock.json package-lock.json
 
 # Run the install script as root
 RUN sh ./tools/install-everything.sh $INSTALL_PARAMETER
 
 #Copy remaining LRR files from context
-COPY --chown=koyomi:koyomi /lib lib
-COPY --chown=koyomi:koyomi /public public
-COPY --chown=koyomi:koyomi /script script
-COPY --chown=koyomi:koyomi /templates templates
-COPY --chown=koyomi:koyomi /tests tests
-COPY --chown=koyomi:koyomi /lrr.conf lrr.conf
-COPY --chown=koyomi:koyomi /tools/build/docker/redis.conf tools/build/docker/
+COPY --chown=root:root /lib lib
+COPY --chown=root:root /public public
+COPY --chown=root:root /script script
+COPY --chown=root:root /templates templates
+COPY --chown=root:root /tests tests
+COPY --chown=root:root /lrr.conf lrr.conf
+COPY --chown=root:root /tools/build/docker/redis.conf tools/build/docker/
 COPY /tools/build/docker/wsl.conf /etc/wsl.conf
 #Copy s6-overlay 3.x services
 #Uses a system-d like definition that can't be use in 2.x
@@ -75,7 +75,7 @@ COPY /tools/build/docker/s6/cont-init.d/01-lrr-setup /etc/s6-overlay/s6-rc.d/ini
 #COPY /tools/build/docker/s6/fix-attrs.d/ /etc/fix-attrs.d/
 
 # Persistent volumes
-VOLUME [ "/home/koyomi/lanraragi/content" ]
-VOLUME [ "/home/koyomi/lanraragi/content/thumb" ]
-VOLUME [ "/home/koyomi/lanraragi/database"]
-VOLUME [ "/home/koyomi/lanraragi/lib/LANraragi/Plugin/Sideloaded" ]
+VOLUME [ "/root/lanraragi/content" ]
+VOLUME [ "/root/lanraragi/content/thumb" ]
+VOLUME [ "/root/lanraragi/database"]
+VOLUME [ "/root/lanraragi/lib/LANraragi/Plugin/Sideloaded" ]

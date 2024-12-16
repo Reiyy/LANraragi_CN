@@ -6,7 +6,7 @@ services:
       dockerfile: tools/build/docker/Dockerfile-dev
       context: ../../..
     volumes:
-      - ../../../:/home/koyomi/lanraragi
+      - ../../../:/root/lanraragi
     ports:
       - "3000:3000"
     environment:

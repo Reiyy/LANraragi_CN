@@ -28,7 +28,7 @@ jobs:
         docker buildx build \
           --platform linux/arm/v6,linux/arm/v7 \
           --output "type=image,push=false" \
-          --tag difegue/lanraragi:nightly \
+          --tag reiyy/lanraragi_cn:dev \
           --cache-from "type=local,src=/tmp/buildxcache" \
           --cache-to "type=local,dest=/tmp/buildxcache" \
           --file ./tools/build/docker/Dockerfile .
@@ -60,7 +60,7 @@ jobs:
         docker buildx build \
           --platform linux/386,linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7 \
           --output "type=image,push=true" \
-          --tag difegue/lanraragi:nightly \
+          --tag reiyy/lanraragi_cn:dev \
           --cache-from "type=local,src=/tmp/buildxcache" \
           --cache-to "type=local,dest=/tmp/buildxcache" \
           --file ./tools/build/docker/Dockerfile .
@@ -72,8 +72,8 @@ jobs:
     - uses: actions/checkout@master
     - name: Docker Build and export
       run: |
-        docker build -t difegue/lanraragi -f ./tools/build/docker/Dockerfile .
-        docker create --name rootfs difegue/lanraragi 
+        docker build -t reiyy/lanraragi_cn -f ./tools/build/docker/Dockerfile .
+        docker create --name rootfs reiyy/lanraragi_cn
         docker export --output=package.tar rootfs
     - name: Upload rootfs
       uses: actions/upload-artifact@v4
@@ -88,8 +88,8 @@ jobs:
     - uses: actions/checkout@master
     - name: Docker Build and export
       run: |
-        docker build -t difegue/lanraragi -f ./tools/build/docker/Dockerfile-legacy --build-arg INSTALL_PARAMETER=-w .
-        docker create --name rootfs difegue/lanraragi 
+        docker build -t reiyy/lanraragi_cn -f ./tools/build/docker/Dockerfile-legacy --build-arg INSTALL_PARAMETER=-w .
+        docker create --name rootfs reiyy/lanraragi_cn
         docker export --output=package-legacy.tar rootfs
     - name: Upload rootfs
       uses: actions/upload-artifact@v4

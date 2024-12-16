@@ -8,11 +8,11 @@ jobs:
     - uses: actions/checkout@master
     - name: Test Docker Build
       run: |
-        docker build -t difegue/lanraragi -f ./tools/build/docker/Dockerfile .
+        docker build -t reiyy/lanraragi_cn:dev -f ./tools/build/docker/Dockerfile .
     - name: LANraragi Test Suite
       uses: ./.github/action-run-tests
     - name: Perl Critic
-      uses: Difegue/action-perlcritic@master
+      uses: Reiyy/action-perlcritic@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
