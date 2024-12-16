@@ -74,7 +74,7 @@ sub get_tags {
         $gID    = $1;
         $gToken = $2;
         $hasSrc = 1;
-        $logger->debug("跳过搜索，本次使用来自参数的画廊 $gID / $gTokeng");
+        $logger->debug("跳过搜索，本次使用来自参数的画廊 $gID / $gToken");
     } else {
 
         # Craft URL for Text Search on EH if there's no user argument
