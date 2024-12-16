@@ -51,7 +51,7 @@ Config.initializeAll = function () {
 
 Config.rebootShinobu = function () {
     $("#restart-button").prop("disabled", true);
-    Server.callAPI("/api/shinobu/restart", "POST", "Background Worker restarted!", "Error while restarting Worker:",
+    Server.callAPI("/api/shinobu/restart", "POST", "后台工作程序已重启！", "重启工作程序出错:",
         () => {
             $("#restart-button").prop("disabled", false);
             Config.shinobuStatus();
@@ -61,7 +61,7 @@ Config.rebootShinobu = function () {
 
 Config.rescanContentFolder = function () {
     $("#rescan-button").prop("disabled", true);
-    Server.callAPI("/api/shinobu/rescan", "POST", "Content folder rescan started!", "Error while restarting Worker:",
+    Server.callAPI("/api/shinobu/rescan", "POST", "开始重新扫描内容文件夹！", "重启工作程序出错:",
         () => {
             $("#rescan-button").prop("disabled", false);
             Config.shinobuStatus();
@@ -71,7 +71,7 @@ Config.rescanContentFolder = function () {
 
 // Update the status of the background worker.
 Config.shinobuStatus = function () {
-    Server.callAPI("/api/shinobu", "GET", null, "Error while querying Shinobu status:",
+    Server.callAPI("/api/shinobu", "GET", null, "查询Shinobu状态出错:",
         (data) => {
             if (data.is_alive) {
                 $("#shinobu-ok").show();

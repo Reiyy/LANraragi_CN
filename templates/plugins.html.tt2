@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-	<title>[% title %] - Plugin Configuration</title>
+	<title>[% title %] - 插件配置</title>
 
 	<meta name="viewport" content="width=device-width" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -42,11 +42,11 @@
 <body>
 
 	<div class="ido" style="text-align:center;">
-		<h1 class="ih" style="text-align:center">Plugin Configuration</h1>
-		<br /> Enable/Disable Auto-Plugin on metadata plugins by checking the toggles.
-		<br /> Plugins will be automatically used on new archives if they're toggled here.
-		<br /> If they have configuration variables, you can set them here as well.
-		<br /> You can also trigger Scripts here. Triggering a script will save your Plugin settings beforehand.
+		<h1 class="ih" style="text-align:center">插件配置</h1>
+		<br /> 切换自动运行开关来在元数据插件上启用/禁用自动运行。
+		<br /> 如果你启用了自动运行，当新档案被添加时插件会自动应用。
+		<br /> 如果插件具有配置项，你也可以在这里进行设置。
+		<br /> 你也可以在这里触发脚本。触发脚本时将先保存你的插件设置。
 		<br />
 
 		<form name="editPluginForm" id="editPluginForm" enctype="multipart/form-data" method="post">
@@ -55,7 +55,7 @@
 				<ul class="collapsible extensible with-right-caret">
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-plug" aria-hidden="true"></i> Login Plugins
+							<i class="fa fa-plug" aria-hidden="true"></i> 登录插件
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = logins %]
@@ -63,7 +63,7 @@
 					</li>
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fas fa-cloud-download-alt" aria-hidden="true"></i> Downloaders
+							<i class="fas fa-cloud-download-alt" aria-hidden="true"></i> 下载器
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = downloaders %]
@@ -71,7 +71,7 @@
 					</li>
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-scroll" aria-hidden="true"></i> Scripts
+							<i class="fa fa-scroll" aria-hidden="true"></i> 脚本
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = scripts %]
@@ -84,19 +84,19 @@
 				<ul class="collapsible extensible with-right-caret">
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-digital-tachograph" aria-hidden="true"></i> Metadata Plugins
+							<i class="fa fa-digital-tachograph" aria-hidden="true"></i> 元数据插件
 						</div>
 						<div class="collapsible-body">
 
-							<h1 class="ih" style="display:inline">Allow Plugins to replace archive titles: </h1>
+							<h1 class="ih" style="display:inline">允许插件替换档案标题：</h1>
 							[% IF replacetitles %]
 							<input id="replacetitles" name="replacetitles" class="fa" type="checkbox" checked> [% ELSE
 							%]
 							<input id="replacetitles" name="replacetitles" class="fa" type="checkbox"> [% END %]
 							<label for="replacetitles">
-								<br> If enabled, metadata plugins will be able to change the title of your archives
-								alongside
-								adding tags to them.
+								<br> 如果启用，元数据插件将能在添加标签
+								时
+								更改档案标题。
 							</label>
 							<br />
 							<br />
@@ -110,15 +110,15 @@
 			<h1 style="text-align:center">
 				<span class="script-running" style="display:none">
 					<i aria-hidden="true" class="fa fa-3x fa-atom fa-spin"></i> <br>
-					A script is running...
+					一个脚本正在运行...
 				</span>
-				<input id='save' class='stdbtn' type='button' value='Save Plugin Configuration' />
+				<input id='save' class='stdbtn' type='button' value='保存插件配置' />
 				<span id="plugin-upload" class='stdbtn fileinput-button'
 					style="margin-bottom: -10px; font-weight:normal">
-					<span style="position:absolute; top:5px; left:25%">Upload Plugin</span>
+					<span style="position:absolute; top:5px; left:25%">上传插件</span>
 					<input type='file' name='file' multiple id='fileupload'>
 				</span>
-				<input id='return' class='stdbtn' type='button' value='Return to Library' />
+				<input id='return' class='stdbtn' type='button' value='返回档案库' />
 			</h1>
 		</form>
 	</div>

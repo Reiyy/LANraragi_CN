@@ -14,14 +14,14 @@ sub plugin_info {
 
     return (
         # Standard metadata
-        name       => "E*Hentai Downloader",
+        name       => "E*Hentai 下载器",
         type       => "download",
         namespace  => "ehdl",
         login_from => "ehlogin",
         author     => "Difegue",
         version    => "1.1",
         description =>
-          "Downloads the given e*hentai URL and adds it to LANraragi. This uses GP to call the archiver, so make sure you have enough!",
+          "下载给定的 e*hentai URL 并将其添加到 LANraragi。这将使用 GP 调用档案，因此请确保你有足够的GP!",
 
         # Downloader-specific metadata
         url_regex => "https?:\/\/e(-|x)hentai.org\/g\/.*\/.*"
@@ -54,7 +54,7 @@ sub provide_url {
     $logger->debug("gID: $gID, gToken: $gToken");
 
     my $archiverurl = "$domain\/archiver.php?gid=$gID&token=$gToken";
-    $logger->info("Archiver URL: $archiverurl");
+    $logger->info("档案 URL: $archiverurl");
 
     # Do a quick GET to check for potential errors
     my $archiverHtml = $lrr_info->{user_agent}->max_redirects(5)->get($archiverurl)->result->body;
@@ -75,11 +75,11 @@ sub provide_url {
     )->result;
 
     my $content = $response->body;
-    $logger->debug("/archiver.php result: $content");
+    $logger->debug("/archiver.php 结果: $content");
 
     if ($content =~ /.*Insufficient funds.*/gim) {
-        $logger->debug("Not enough GP, aborting download.");
-        return ( error => "You do not have enough GP to download this URL." );
+        $logger->debug("GP 不足，正在中止下载。");
+        return ( error => "你没有足够的 GP 以下载此 URL" );
     }
 
     my $finalURL = URI->new();
@@ -87,7 +87,7 @@ sub provide_url {
         # Parse that to get the final URL
         if ( $content =~ /.*document.location = "(.*)".*/gim ) {
             $finalURL = URI->new($1);
-            $logger->info("Final URL obtained: $finalURL");
+            $logger->info("最终获取的 URL: $finalURL");
         }
     };
 

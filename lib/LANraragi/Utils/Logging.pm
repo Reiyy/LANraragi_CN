@@ -3,6 +3,7 @@ package LANraragi::Utils::Logging;
 use strict;
 use warnings;
 use utf8;
+use open ':std', ':encoding(UTF-8)';
 
 use feature 'say';
 use POSIX;
@@ -123,7 +124,7 @@ sub get_lines_from_file {
         return decode_utf8($res);
     }
 
-    return "No logs to be found here!";
+    return "没有在这里找到日志！";
 
 }
 

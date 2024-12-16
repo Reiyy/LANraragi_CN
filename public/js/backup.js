@@ -14,13 +14,13 @@ Backup.initializeAll = function () {
         done(e, data) {
             $("#processing").attr("style", "display:none");
 
-            if (data.result.success === 1) $("#result").html("Backup restored!");
+            if (data.result.success === 1) $("#result").html("备份已恢复！");
             else $("#result").html(data.result.error);
         },
 
         fail() {
             $("#processing").attr("style", "display:none");
-            $("#result").html("An error occured server-side. woops.<br/> Maybe your JSON is badly formatted ?");
+            $("#result").html("发生了服务器端错误。蛋糕了。<br/> 可能你的JSON格式有问题？");
         },
 
         progressall() {

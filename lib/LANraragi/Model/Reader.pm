@@ -72,7 +72,7 @@ sub build_reader_JSON {
     my @images = @$images;
     my @sizes  = @$sizes;
 
-    $self->LRR_LOGGER->debug( "Files found in archive (encoding might be incorrect): \n " . Dumper @images );
+    $self->LRR_LOGGER->debug( "在档案中找到的文件（编码可能不正确）：\n " . Dumper @images );
 
     # Build a browser-compliant filepath array from @images
     my @images_browser;

@@ -8,7 +8,7 @@ use warnings;
 use Mojo::JSON qw(from_json);
 use File::Basename;
 use Scalar::Util qw(looks_like_number);
-
+use utf8;
 #You can also use the LRR Internal API when fitting.
 use LANraragi::Model::Plugins;
 use LANraragi::Utils::Database qw(redis_encode redis_decode);
@@ -25,7 +25,7 @@ sub plugin_info {
         author      => "Difegue",
         version     => "1.0",
         description =>
-          "Derive tags from the filename of the given archive. <br>Follows the doujinshi naming standard (Release) [Artist] TITLE (Series) [Language].",
+          "从给定档案的文件名中派生标签。<br>遵循同人志命名标准（发布）[艺术家]标题（系列）[语言]。",
         icon =>
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAL1JREFUOI1jZMABpNbH/sclx8DAwPAscDEjNnEMQUIGETIYhUOqYdgMhTPINQzdUEZqGIZsKBM1DEIGTOiuexqwCKdidDl0vtT62P9kuZCJEWuKYWBgYGBgRHbh04BFDNIb4jAUbbSrZTARUkURg6lD10OUC/0PNaMYgs1Skgwk1jCSDCQWoBg46dYmhite0+D8pwGLCMY6uotRDOy8toZBkI2HIhcO/pxCm8KBUkOxFl/kGoq3gCXFYFxVAACeoU/8xSNybwAAAABJRU5ErkJggg==",
         parameters => [ ]

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 
+use utf8;
 use Mojo::UserAgent;
 use LANraragi::Utils::Logging qw(get_logger);
 
@@ -12,15 +13,15 @@ sub plugin_info {
 
     return (
 		#Standard metadata
-        name      => "Pixiv Login",
+        name      => "Pixiv 登录",
         type      => "login",
         namespace => "pixivlogin",
         author    => "psilabs-dev",
         version   => "0.1",
         description =>
-          "Handles login to Pixiv. See https://github.com/Nandaka/PixivUtil2/wiki for how to obtain the cookie.",
+          "处理 Pixiv 登录。请参阅 https://github.com/Nandaka/PixivUtil2/wiki 了解如何获取Cookie。",
         parameters => [
-            { type => "string", desc => "Browser UserAgent (Default is 'Mozilla/5.0')" },
+            { type => "string", desc => "浏览器UA (默认为'Mozilla/5.0')" },
 			{ type => "string", desc => "Cookie (PHP session ID)" }
         ]
     );

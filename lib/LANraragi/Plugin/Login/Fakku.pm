@@ -4,6 +4,7 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 
+use utf8;
 use Mojo::UserAgent;
 use LANraragi::Utils::Logging qw(get_logger);
 
@@ -16,7 +17,7 @@ sub plugin_info {
         author    => "Nodja",
         version   => "0.1",
         description =>
-          "Handles login to fakku. The cookie is only valid for 7 days so don't forget to update it.",
+          "处理 Fakku 登录。Cookie 仅在 7 天内有效，记得及时更新。",
         parameters => [
             { type => "string", desc => "fakku_sid cookie value" }
         ]

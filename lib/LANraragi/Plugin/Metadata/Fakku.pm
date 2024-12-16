@@ -9,7 +9,7 @@ use URI::Escape;
 use Mojo::JSON qw(decode_json);
 use Mojo::UserAgent;
 use Mojo::DOM;
-
+use utf8;
 #You can also use the LRR Internal API when fitting.
 use LANraragi::Model::Plugins;
 use LANraragi::Utils::Logging qw(get_plugin_logger);
@@ -27,12 +27,12 @@ sub plugin_info {
         author      => "Difegue, Nodja, Nixis198",
         version     => "0.97",
         description =>
-          "Searches FAKKU for tags matching your archive. If you have an account, don't forget to enter the matching cookie in the login plugin to be able to access controversial content. <br/><br/>  
-           <i class='fa fa-exclamation-circle'></i> <b>This plugin can and will return invalid results depending on what you're searching for!</b> <br/>The FAKKU search API isn't very precise and I recommend you use the Chaika.moe plugin when possible.",
+          "在 FAKKU 上搜索与你的档案匹配的标签。如果你有账户，请在登录插件中输入匹配的 Cookie 以访问争议内容。<br/><br/>  
+           <i class='fa fa-exclamation-circle'></i> <b>此插件可能会根据你的搜索内容返回无效结果！<br/>FAKKU 的搜索 API 精度较低，建议尽可能使用 Chaika.moe 插件",
         icon =>
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAACZSURBVDhPlY+xDYQwDEWvZgRGYA22Y4frqJDSZhFugiuuo4cqPGT0iTjAYL3C+fGzktc3hEcsQvJq6HtjE2Jdv4viH4a4pWnL8q4A6g+ET9P8YhS2/kqwIZXWnwqChDxPfCFfD76wOzJ2IOR/0DSwnuRKYAKUW3gq2OsJTYM0jr7QVRVwlabJEaw3ARYBcmFXeomxphIeEMIMmh3lOLQR+QQAAAAASUVORK5CYII=",
         oneshot_arg => "FAKKU Gallery URL (Will attach tags matching this exact gallery to your archive)",
-        parameters  => [ { type => "bool", desc => "Add 'Source' tag" } ]
+        parameters  => [ { type => "bool", desc => "添加“Source”标签" } ]
     );
 
 }

@@ -79,7 +79,7 @@ sub generate_thumbnail ( $orig_path, $thumb_path, $use_hq, $use_jxl ) {
 sub extract_archive ( $destination, $to_extract, $force_extract ) {
 
     my $logger = get_logger( "Archive", "lanraragi" );
-    $logger->debug("Fully extracting archive $to_extract");
+    $logger->debug("正在完全提取档案 $to_extract");
 
     # PDFs are handled by Ghostscript (alas)
     if ( is_pdf($to_extract) ) {

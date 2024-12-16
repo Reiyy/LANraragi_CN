@@ -9,12 +9,12 @@ sub plugin_info {
 
     return (
         # Standard metadata
-        name        => "Chaika.moe Downloader",
+        name        => "Chaika.moe 下载器",
         type        => "download",
         namespace   => "chaikadl",
         author      => "Difegue",
         version     => "1.0",
-        description => "Downloads the given chaika.moe URL and adds it to LANraragi. No support for gallery links for now!",
+        description => "下载给定的 chaika.moe URL 并将其添加到 LANraragi。暂不支持画廊链接！",
 
         # Downloader-specific metadata
         # https://panda.chaika.moe/archive/_____/

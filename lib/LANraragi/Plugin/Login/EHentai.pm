@@ -4,6 +4,7 @@ use strict;
 use warnings;
 no warnings 'uninitialized';
 
+use utf8;
 use Mojo::UserAgent;
 use LANraragi::Utils::Logging qw(get_logger);
 
@@ -18,12 +19,12 @@ sub plugin_info {
         author    => "Difegue",
         version   => "2.3",
         description =>
-          "Handles login to E-H. If you have an account that can access fjorded content or exhentai, adding the credentials here will make more archives available for parsing.",
+          "处理 E-H 登录。如果您有一个可以访问 fjorded 内容或 Exhentai 的账户，添加凭据后可以解析更多档案。",
         parameters => [
             { type => "int",    desc => "ipb_member_id cookie" },
             { type => "string", desc => "ipb_pass_hash cookie" },
-            { type => "string", desc => "star cookie (optional, if present you can view fjorded content without exhentai)" },
-            { type => "string", desc => "igneous cookie(optional, if present you can view exhentai without Europe and America IP)" }
+            { type => "string", desc => "star cookie (可选，如果有，你可以在不使用 Exhentai 的情况下查看 fjorded 内容)" },
+            { type => "string", desc => "igneous cookie(可选，如果有，你可以在没有欧洲或美国IP的情况下访问Exhentai)" }
         ]
     );
 
@@ -50,7 +51,7 @@ sub get_user_agent {
     my $ua     = Mojo::UserAgent->new;
 
     if ( $ipb_member_id ne "" && $ipb_pass_hash ne "" ) {
-        $logger->info("Cookies provided ($ipb_member_id $ipb_pass_hash $star $igneous)!");
+        $logger->info("已提供 Cookies ($ipb_member_id $ipb_pass_hash $star $igneous)!");
 
         #Setup the needed cookies with both domains
         #They should translate to exhentai cookies with the igneous value generated
@@ -156,7 +157,7 @@ sub get_user_agent {
 
 
     } else {
-        $logger->info("No cookies provided, returning blank UserAgent.");
+        $logger->info("未提供 Cookies，返回空的 UserAgent。");
     }
 
     return $ua;

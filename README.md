@@ -9,9 +9,17 @@
 
 <img src="public/favicon.ico" width="128">  
   
-LANraragi
+LANraragi_CN
 ===========
+这是一个新的LANraragi简体中文汉化版本。
+基于当前最新LANraragi版本，重新翻译了所有文本，修正了一些翻译错误。
 
+Docker部分与先前的汉化项目保持一致，使用root账户代替koyomi解决群晖nas上面的无法访问挂载文件夹/home/koyomi/lanraragi/content目录的问题，如果你使用Docker安装，将漫画文件夹挂载到/root/lanraragi/content，数据库挂载到/root/lanraragi/database。
+
+（注意！本项目仍处于测试阶段，请记得备份你的数据！）
+Docker用户将镜像切换到 reiyy/lanraragi_cn:latest 即可。
+
+===========
 Open source server for archival of comics/manga, running on Mojolicious + Redis.
 
 #### 💬 Talk with other fellow LANraragi Users on [Discord](https://discord.gg/aRQxtbg) or [GitHub Discussions](https://github.com/Difegue/LANraragi/discussions)  

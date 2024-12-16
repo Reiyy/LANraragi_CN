@@ -61,18 +61,18 @@ say("⣿⣿⣿⣿⣿⣿⣿⣿⡇⢀⢀⢀⢀⣸⣿⣿⣿⣿⣿⣿⣿⣿⢀⢀⢀
 say("⠙⢿⣿⣿⣿⣿⣿⣿⡇⢀⣠⣴⣿⡿⠿⣿⣿⣿⣿⣿⣿⣿⢀⣀⣤⣾⣿⠟⠃");
 say("⢀⢀⠈⠙⠿⣿⣿⣿⣷⣿⠿⠛⠁⢀⢀⢀⠉⠻⢿⣿⣿⣿⣾⡿⠟⠉");
 say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-say("~~~~~LANraragi Installer~~~~~");
+say("~~~~~LANraragi 安装程序~~~~~");
 say("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 unless ( @ARGV > 0 ) {
-    say("Execution: npm run lanraragi-installer [mode]");
+    say("执行：npm run lanraragi-installer [模式]");
     say("--------------------------");
-    say("Available modes are: ");
-    say("* install-front: Install/Update Clientside dependencies.");
-    say("* install-back: Install/Update Perl dependencies.");
-    say("* install-full: Install/Update all dependencies.");
+    say("可用模式有: ");
+    say("* install-front: 安装/更新客户端依赖。");
+    say("* install-back: 安装/更新 Perl 依赖。");
+    say("* install-full: 安装/更新所有依赖项");
     say("");
-    say("If installing from source, please use install-full.");
+    say("如果从源代码安装，请使用 install-full 模式。");
     exit;
 }
 
@@ -81,7 +81,7 @@ my $back   = $ARGV[0] eq "install-back";
 my $full   = $ARGV[0] eq "install-full";
 my $legacy = $ARGV[1] eq "legacy";
 
-say( "Working Directory: " . getcwd );
+say( "工作目录: " . getcwd );
 say("");
 
 # Provide cpanm with the correct module installation dir when using Homebrew
@@ -96,25 +96,25 @@ install_package( "Config::AutoConf", $cpanopt );
 IPC::Cmd->import('can_run');
 require Config::AutoConf;
 
-say("\r\nWill now check if all LRR software dependencies are met. \r\n");
+say("\r\n现在将检查所有依赖项是否满足运行LRR软件。\r\n");
 
 #Check for Redis
-say("Checking for Redis...");
+say("正在检查 Redis...");
 can_run('redis-server')
-  or die 'NOT FOUND! Please install a Redis server before proceeding.';
-say("OK!");
+  or die '未找到！请在继续之前安装 Redis 服务器。';
+say("完成！");
 
 #Check for GhostScript
-say("Checking for GhostScript...");
+say("正在检查 GhostScript...");
 can_run('gs')
-  or warn 'NOT FOUND! PDF support will not work properly. Please install the "gs" tool.';
-say("OK!");
+  or warn '未找到！PDF功能将无法正常工作。请安装“gs”工具。';
+say("完成！");
 
 #Check for libarchive
-say("Checking for libarchive...");
+say("C正在检查 libarchive...");
 Config::AutoConf->new()->check_header("archive.h")
   or die 'NOT FOUND! Please install libarchive and ensure its headers are present.';
-say("OK!");
+say("完成！");
 
 #Check for PerlMagick
 say("Checking for ImageMagick/PerlMagick...");

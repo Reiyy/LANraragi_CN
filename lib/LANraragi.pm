@@ -76,8 +76,8 @@ sub startup {
     eval { $self->LRR_CONF->get_redis->ping(); };
     if ($@) {
         say "(╯・_>・）╯︵ ┻━┻";
-        say "It appears your Redis database is currently not running.";
-        say "The program will cease functioning now.";
+        say "看起来你的 Redis 数据库当前未运行。";
+        say "程序现在将停止运行。";
         die;
     }
 
@@ -89,20 +89,20 @@ sub startup {
 
         last unless ($@);
 
-        say "Redis error encountered: $@";
-        say "Trying again in 2 seconds...";
+        say "遇到 Redis 错误: $@";
+        say "将于2秒后重试...";
         sleep 2;
     }
 
     # Check old settings and migrate them if needed
     if ( $self->LRR_CONF->get_redis->keys('LRR_*') ) {
-        say "Migrating old settings to new format...";
+        say "正在将旧版配置迁移到新版...";
         migrate_old_settings($self);
     }
 
     if ( $self->LRR_CONF->enable_devmode ) {
         $self->mode('development');
-        $self->LRR_LOGGER->info("LANraragi $version (re-)started. (Debug Mode)");
+        $self->LRR_LOGGER->info("LANraragi $version 已(重新)启动。(调试模式)");
 
         my $logpath = get_logdir . "/mojo.log";
 
@@ -112,7 +112,7 @@ sub startup {
                 my ( $time, $level, @lines ) = @_;
 
                 open( my $fh, '>>', $logpath )
-                  or die "Could not open file '$logpath' $!";
+                  or die "无法打开文件 '$logpath' $!";
 
                 my $l1 = $lines[0] // "";
                 my $l2 = $lines[1] // "";
@@ -123,26 +123,26 @@ sub startup {
 
     } else {
         $self->mode('production');
-        $self->LRR_LOGGER->info("LANraragi $version started. (Production Mode)");
+        $self->LRR_LOGGER->info("LANraragi $version 已启动。(生产模式)");
     }
 
     #Plugin listing
     my @plugins = get_plugins("metadata");
     foreach my $pluginfo (@plugins) {
         my $name = $pluginfo->{name};
-        $self->LRR_LOGGER->info( "Plugin Detected: " . $name );
+        $self->LRR_LOGGER->info( "检测到插件: " . $name );
     }
 
     @plugins = get_plugins("script");
     foreach my $pluginfo (@plugins) {
         my $name = $pluginfo->{name};
-        $self->LRR_LOGGER->info( "Script Detected: " . $name );
+        $self->LRR_LOGGER->info( "检测到脚本: " . $name );
     }
 
     @plugins = get_plugins("download");
     foreach my $pluginfo (@plugins) {
         my $name = $pluginfo->{name};
-        $self->LRR_LOGGER->info( "Downloader Detected: " . $name );
+        $self->LRR_LOGGER->info( "检测到下载器: " . $name );
     }
 
     # Enable Minion capabilities in the app
@@ -154,13 +154,13 @@ sub startup {
     # If the password is non-empty, add the required delimiters
     if ($redispassword) { $redispassword = "x:" . $redispassword . "@"; }
 
-    say "Minion will use the Redis database at $miniondb";
+    say "Minion将使用位于 $miniondb 的Redis数据库";
     $self->plugin( 'Minion' => { Redis => "redis://$redispassword$miniondb" } );
-    $self->LRR_LOGGER->info("Successfully connected to Minion database.");
+    $self->LRR_LOGGER->info("成功连接到Minion数据库。");
     $self->minion->missing_after(5);    # Clean up older workers after 5 seconds of unavailability
 
     LANraragi::Utils::Minion::add_tasks( $self->minion );
-    $self->LRR_LOGGER->debug("Registered tasks with Minion.");
+    $self->LRR_LOGGER->debug("已在Minion中添加任务。");
 
     # Rebuild stat hashes
     # /!\ Enqueuing tasks must be done either before starting the worker, or once the IOLoop is started!
@@ -184,7 +184,7 @@ sub startup {
     );
 
     LANraragi::Utils::Routing::apply_routes($self);
-    $self->LRR_LOGGER->info("Routing done! Ready to receive requests.");
+    $self->LRR_LOGGER->info("路由完成！已准备好接受请求。");
 }
 
 sub shutdown_from_pid {

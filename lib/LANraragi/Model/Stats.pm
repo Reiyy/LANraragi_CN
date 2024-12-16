@@ -56,7 +56,7 @@ sub build_stat_hashes {
     $redistx->flushdb();
 
     # Iterate on hashes to get their tags
-    $logger->info("Building stat indexes... ($archive_count archives)");
+    $logger->info("正在构建统计索引... ($archive_count 个档案)");
 
     # TODO go through tanks first, and remove their IDs from @keys
 

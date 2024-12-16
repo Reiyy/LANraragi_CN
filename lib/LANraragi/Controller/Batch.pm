@@ -43,7 +43,7 @@ sub socket {
 
     my $logger = get_logger( "Batch Tagging", "lanraragi" );
 
-    $logger->info('Client connected to Batch Tagging service');
+    $logger->info('客户端已连接到 Batch Tagging 服务。');
 
     # Increase inactivity timeout for connection a bit to account for clientside timeouts
     $self->inactivity_timeout(80);
@@ -54,11 +54,11 @@ sub socket {
         message => sub {
             my ( $self, $msg ) = @_;
 
-            $logger->debug("Received WS message $msg");
+            $logger->debug("接收到WebSocket消息 $msg");
 
             # encode message before json-decoding it in case it has UTF8 characters in the argument overrides
             $msg = encode( 'UTF-8', $msg );
-            $logger->trace("Encoded message $msg");
+            $logger->trace("已编码消息 $msg");
 
             # JSON-decode message and perform the requested action
             my $command    = decode_json($msg);
@@ -67,7 +67,7 @@ sub socket {
             my $id         = $command->{"archive"};
 
             unless ($id) {
-                $client->finish( 1001 => 'No archives provided.' );
+                $client->finish( 1001 => '未提供档案。' );
                 return;
             }
 
@@ -75,7 +75,7 @@ sub socket {
 
                 my $plugin = get_plugin($pluginname);
                 unless ($plugin) {
-                    $client->finish( 1001 => 'Plugin not found.' );
+                    $client->finish( 1001 => '未找到插件。' );
                     return;
                 }
 
@@ -83,7 +83,7 @@ sub socket {
                 my @args = @{ $command->{"args"} };
 
                 if ( !@args ) {
-                    $logger->debug("No user overrides given.");
+                    $logger->debug("没有提供用户覆盖参数。");
 
                     # Try getting the saved defaults
                     @args = get_plugin_parameters($pluginname);
@@ -129,7 +129,7 @@ sub socket {
 
             if ( $operation eq "tagrules" ) {
 
-                $logger->debug("Applying tag rules to $id...");
+                $logger->debug("将标签规则应用于 $id...");
                 my $tags = $redis->hget( $id, "tags" );
                 $tags = redis_decode($tags);
 
@@ -138,7 +138,7 @@ sub socket {
 
                 # Merge array with commas
                 my $newtags = join( ', ', @tagarray );
-                $logger->debug("New tags: $newtags");
+                $logger->debug("新标签: $newtags");
                 set_tags( $id, $newtags );
 
                 $client->send(
@@ -156,7 +156,7 @@ sub socket {
             }
 
             if ( $operation eq "delete" ) {
-                $logger->debug("Deleting $id...");
+                $logger->debug("正在删除 $id...");
 
                 my $delStatus = LANraragi::Model::Archive::delete_archive($id);
 
@@ -188,7 +188,7 @@ sub socket {
 
         # If the client doesn't respond, halt processing
         finish => sub {
-            $logger->info('Client disconnected, halting remaining operations');
+            $logger->info('客户端已断开连接，停止剩余操作。');
             $cancelled = 1;
             $redis->quit();
         }
