@@ -3,6 +3,7 @@ package LANraragi::Plugin::Download::Chaika;
 use strict;
 use warnings;
 no warnings 'uninitialized';
+use utf8;
 
 # Meta-information about your plugin.
 sub plugin_info {

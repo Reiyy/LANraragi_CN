@@ -3,6 +3,7 @@ package LANraragi::Plugin::Download::EHentai;
 use strict;
 use warnings;
 no warnings 'uninitialized';
+use utf8;
 
 use URI;
 use Mojo::UserAgent;
