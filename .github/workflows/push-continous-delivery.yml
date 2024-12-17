@@ -6,7 +6,6 @@ on:
     - actions-testing
 name: Continuous Delivery 
 jobs:
-jobs:
   buildDevDocker:
     name: 构建并提交Docker镜像(Dev)
     runs-on: ubuntu-latest
