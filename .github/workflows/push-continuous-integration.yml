@@ -1,15 +1,15 @@
 on: [push, pull_request]
-name: "Continuous Integration \U0001F44C\U0001F440"
+name: "持续集成(CI) \U0001F44C\U0001F440"
 jobs:
   testSuite:
-    name: Run Test Suite and Perl Critic
+    name: 运行测试套件和Perl Critic
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Test Docker Build
+    - name: 测试 Docker 构建
       run: |
-        docker build -t reiyy/lanraragi_cn:dev -f ./tools/build/docker/Dockerfile .
-    - name: LANraragi Test Suite
+        docker build -t yareiy/lanraragi_cn:dev -f ./tools/build/docker/Dockerfile .
+    - name: LANraragi 测试套件
       uses: ./.github/action-run-tests
     - name: Perl Critic
       uses: Reiyy/action-perlcritic@master

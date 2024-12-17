@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "🎌 Running LRR Test Suite 🎌"
+echo "🎌 正在运行 LRR 测试套件 🎌"
 
 # Install cpan deps in case some are missing
 perl ./tools/install.pl install-back

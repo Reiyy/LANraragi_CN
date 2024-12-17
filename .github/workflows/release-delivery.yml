@@ -1,85 +1,17 @@
 on: 
   release:
     types: [published]
-name: New Version Release
+name: 发布新版本
 jobs:
 
-  exportDockerRootFS:
-    name: Build and export Docker rootfs for Windows build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: Docker Build and export
-      run: |
-        docker build -t reiyy/lanraragi_cn -f ./tools/build/docker/Dockerfile .
-        docker create --name rootfs reiyy/lanraragi_cn
-        docker export --output=package.tar rootfs
-    - name: Upload rootfs
-      uses: actions/upload-artifact@v4
-      with:
-        name: package
-        path: package.tar 
-        
-  buildReleaseWSL:
-    name: Build Windows Installer
-    needs: exportDockerRootFS
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@master
-    - name: Download package
-      uses: actions/download-artifact@v4
-      with:
-        name: package
-    - name: Build MSI Installer
-      shell: powershell
-      run: |
-        [array]$installPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -property installationpath
-        # Get first line of installPath in case we have multiple VS installs
-        Import-Module (Join-Path $installPath[0] "Common7\Tools\Microsoft.VisualStudio.DevShell.dll")
-        # Import the VS shell module 
-        Enter-VsDevShell -VsInstallPath $installPath[0] -SkipAutomaticLocation
-        $ErrorActionPreference = 'Continue'
-        git submodule init
-        git submodule update
-        choco uninstall wixtoolset
-        choco install wixtoolset --version 3.14.0 --allow-downgrade --force
-        choco install nuget.commandline
-        ./tools/build/windows/build.ps1
-    - name: Upload Installer
-      uses: actions/upload-artifact@v4
-      with:
-        name: LANraragi.msi
-        path: ./tools/build/windows/Karen/LRR_WSL2.msi
-        if-no-files-found: error
-  uploadWSLRelease:
-    name: Add Windows Installer to release
-    needs: buildReleaseWSL
-    runs-on: ubuntu-latest
-    steps:
-    - name: Download package
-      uses: actions/download-artifact@v4
-      with:
-        name: LANraragi.msi
-    - name: Upload Installer to release
-      uses: JasonEtco/upload-to-release@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        args: ./LRR_WSL2.msi application/octet-stream
-    - uses: Ilshidur/action-discord@master
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      with:
-        args: 'Windows Installer built and available on the Release page! <:logo:821516019179978772>🪟'
-
   buildLatestDocker:
-    name: Build Latest Docker image
+    name: 构建最新 Docker 镜像
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Set up QEMU
+    - name: 设置 QEMU
       uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
+    - name: 设置 Docker Buildx
       uses: docker/setup-buildx-action@v3
     - uses: actions/cache@v4
       with: 
@@ -87,25 +19,20 @@ jobs:
         key: ${{ runner.os }}-docker-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-docker-buildx-
-    - name: Docker Login
+    - name: 登录 Docker
       env:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       run: |
         echo "${DOCKER_PASSWORD}" | docker login -u ${DOCKER_USERNAME} --password-stdin
-    - name: Build/Push Latest Docker image and tag with Release number
+    - name: 构建/推送最新Docker镜像并用版本号标记
       run: |
         TAG=${GITHUB_REF:10:10}
         docker buildx build \
           --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
           --output "type=image,push=true" \
-          --tag reiyy/lanraragi_cn:latest \
-          --tag reiyy/lanraragi_cn:$TAG \
+          --tag yareiy/lanraragi_cn:latest \
+          --tag yareiy/lanraragi_cn:$TAG \
           --cache-from "type=local,src=/tmp/buildxcache" \
           --cache-to "type=local,dest=/tmp/buildxcache" \
           --file ./tools/build/docker/Dockerfile .
-    - uses: Ilshidur/action-discord@master
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      with:
-        args: 'Docker image built and available on Docker Hub! 🐳'
