@@ -230,6 +230,7 @@ Index.promptCustomColumn = function (column) {
             autocapitalize: "off",
         },
         showCancelButton: true,
+        cancelButtonText: "取消",
         reverseButtons: true,
         inputValidator: (value) => {
             if (!value) {
@@ -345,7 +346,7 @@ Index.updateCarousel = function (e) {
         break;
     case "ondeck":
         $("#carousel-icon")[0].classList = "fas fa-book-reader";
-        $("#carousel-title").text("上传阅读");
+        $("#carousel-title").text("上次阅读");
         endpoint = `/api/search?filter=${IndexTable.currentSearch}&sortby=lastread`;
         break;
     default:
@@ -525,7 +526,7 @@ Index.loadContextMenuCategories = (catList, id) => Server.callAPI(`/api/archives
         }
 
         if (Object.keys(items).length === 0) {
-            items.noop = { name: "No Categories yet...", icon: "far fa-sad-cry" };
+            items.noop = { name: "还没有分类...", icon: "far fa-sad-cry" };
         }
 
         return items;
@@ -550,6 +551,7 @@ Index.handleContextMenu = function (option, id) {
             showCancelButton: true,
             focusConfirm: false,
             confirmButtonText: "对，删！",
+            cancelButtonText: "算了，不删了",
             reverseButtons: true,
             confirmButtonColor: "#d33",
         }).then((result) => {

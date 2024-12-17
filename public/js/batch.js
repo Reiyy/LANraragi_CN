@@ -102,6 +102,7 @@ Batch.startBatchCheck = function () {
             showCancelButton: true,
             focusConfirm: false,
             confirmButtonText: "没错，删!",
+            cancelButtonText: "算了，不删了",
             reverseButtons: true,
             confirmButtonColor: "#d33",
         }).then((result) => {

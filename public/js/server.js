@@ -210,6 +210,7 @@ Server.dropDatabase = function () {
         showCancelButton: true,
         focusConfirm: false,
         confirmButtonText: "太确定了，淦他丫的！",
+        cancelButtonText: "算了，不淦了",
         reverseButtons: true,
         confirmButtonColor: "#d33",
     }).then((result) => {

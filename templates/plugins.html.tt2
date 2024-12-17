@@ -143,7 +143,7 @@
 	<div style="float:right; text-align: right;">
 
 		[% IF plugin.type == "metadata" %]
-		<h1 class="ih" style="display:inline"> Run Automatically: </h1>
+		<h1 class="ih" style="display:inline"> 自动运行: </h1>
 		<input id="[% plugin.namespace %]" name="[% plugin.namespace %]" class="fa" type="checkbox" [% IF plugin.enabled
 			%] checked [% END %]>
 		<br />
@@ -180,7 +180,7 @@
 			<tr>
 				<td colspan="2">
 					<input class='stdbtn' type='button' onclick="Server.triggerScript('[% plugin.namespace %]');"
-						value='Trigger Script' />
+						value='触发脚本' />
 				</td>
 			</tr>
 		</tbody>
@@ -191,7 +191,7 @@
 	<div class="collapsible-title" style="padding: 5px 0 0 5px">
 		<a>
 			<i class="fas fa-sliders-h fa-2x" style="margin-right: 4px" aria-hidden="true"></i>
-			<b style="vertical-align: super;">Plugin Settings</b>
+			<b style="vertical-align: super;">插件配置</b>
 		</a>
 	</div>
 	<div class="collapsible-body" style="padding:5px 0 0 0">

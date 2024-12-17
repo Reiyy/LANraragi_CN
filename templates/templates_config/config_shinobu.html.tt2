@@ -18,7 +18,7 @@
 
 <tr>
     <td class="option-td">
-        <input id="restart-button" class='stdbtn' type='button' value='Restart File Watcher' />
+        <input id="restart-button" class='stdbtn' type='button' value='重启文件监视器' />
     </td>
     <td class="config-td">
         如果Shinobu崩溃或无响应，你可以点击此按钮重启她。
@@ -27,7 +27,7 @@
 
 <tr>
     <td class="option-td">
-        <input id='open-minion' class='stdbtn' type='button' value='Open Minion Console' />
+        <input id='open-minion' class='stdbtn' type='button' value='打开Minion控制台' />
     </td>
     <td class="config-td">
         Minion Worker 负责处理那些在Web应用的请求/响应生命周期内执行时间过长

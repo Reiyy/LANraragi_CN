@@ -51,6 +51,7 @@ Reader.initializeAll = function () {
             showCancelButton: true,
             focusConfirm: false,
             confirmButtonText: "对，删！",
+            cancelButtonText: "算了，不删了",
             reverseButtons: true,
             confirmButtonColor: "#d33",
         }).then((result) => {

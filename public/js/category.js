@@ -29,6 +29,7 @@ Category.addNewCategory = function (isDynamic) {
             autocapitalize: "off",
         },
         showCancelButton: true,
+        cancelButtonText: "取消",
         reverseButtons: true,
         inputValidator: (value) => {
             if (!value) {
@@ -169,6 +170,7 @@ Category.deleteSelectedCategory = function () {
         showCancelButton: true,
         focusConfirm: false,
         confirmButtonText: "对，删！",
+        cancelButtonText: "算了，不删了",
         reverseButtons: true,
         confirmButtonColor: "#d33",
     }).then((result) => {

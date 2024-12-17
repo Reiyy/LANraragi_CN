@@ -97,7 +97,7 @@
 		</ul>
 
 		<br>
-		<input id="goback" type="button" value="Return to Library" class="stdbtn">
+		<input id="goback" type="button" value="返回档案库" class="stdbtn">
 
 	</div>
 	[% INCLUDE footer %]
