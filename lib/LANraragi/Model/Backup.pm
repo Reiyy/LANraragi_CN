@@ -127,7 +127,7 @@ sub restore_from_JSON {
         #If the archive exists, restore metadata.
         if ( $redis->exists($id) ) {
 
-            $logger->info("Restoring metadata for Archive $id...");
+            $logger->info("正在恢复档案 $id 的元数据...");
             my $thumbhash = redis_encode( $archive->{"thumbhash"} );
 
             set_title( $id, $archive->{"title"} );

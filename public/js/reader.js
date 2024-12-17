@@ -758,7 +758,7 @@ Reader.initializeArchiveOverlay = function () {
                     data.job,
                     false,
                     (data) => thumbProgress(data.notes), // call progress callback one last time to ensure all thumbs are loaded
-                    () => LRR.showErrorToast("The page thumbnailing job didn't conclude properly. Your archive might be corrupted."),
+                    () => LRR.showErrorToast("页面缩略图任务未能正常完成。你的档案可能已损坏。"),
                     thumbProgress,
                 ));
             }

@@ -50,10 +50,10 @@ sub get_tags {
     my $oneshot_current_time = $oneshotarg =~ /^(no|false)$/i;
 
     if ( $oneshot_file_time || ( $use_filetime && !$oneshot_current_time ) ) {
-        $logger->info("Using file date");
+        $logger->info("使用文件日期");
         $newtags = "date_added:" . ( stat( $lrr_info->{file_path} ) )[9];    #9 is the unix time stamp for date modified.
     } else {
-        $logger->info("Using current date");
+        $logger->info("使用当前日期");
         $newtags = "date_added:" . time();
     }
     return ( tags => $newtags );

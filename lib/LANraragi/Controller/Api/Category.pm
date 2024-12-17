@@ -101,12 +101,12 @@ sub add_to_category {
     my ( $result, $err ) = LANraragi::Model::Category::add_to_category( $catid, $arcid );
 
     if ($result) {
-        my $successMessage = "Added $arcid to Category $catid!";
+        my $successMessage = "已添加 $arcid 到分类 $catid!";
         my %category       = LANraragi::Model::Category::get_category($catid);
         my $title          = LANraragi::Model::Archive::get_title($arcid);
 
         if ( %category && defined($title) ) {
-            $successMessage = "Added \"$title\" to category \"$category{name}\"!";
+            $successMessage = "已添加 \"$title\" 到分类 \"$category{name}\"!";
         }
 
         render_api_response( $self, "add_to_category", undef, $successMessage );
@@ -124,12 +124,12 @@ sub remove_from_category {
     my ( $result, $err ) = LANraragi::Model::Category::remove_from_category( $catid, $arcid );
 
     if ($result) {
-        my $successMessage = "Removed $arcid from Category $catid!";
+        my $successMessage = "已删除 $arcid 从分类 $catid 中!";
         my %category       = LANraragi::Model::Category::get_category($catid);
         my $title          = LANraragi::Model::Archive::get_title($arcid);
 
         if ( %category && defined($title) ) {
-            $successMessage = "Removed \"$title\" from category \"$category{name}\"!";
+            $successMessage = "已删除 \"$title\" 从分类 \"$category{name}\"中!";
         }
 
         render_api_response( $self, "remove_from_category", undef, $successMessage );

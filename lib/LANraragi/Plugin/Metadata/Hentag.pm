@@ -68,9 +68,9 @@ sub get_tags {
         unlink $filepath;
 
         #Return tags
-        $logger->info("Sending the following tags to LRR: $tags");
+        $logger->info("正在将以下标签发送到LRR：$tags");
         if ($title) {
-            $logger->info("Parsed title is $title");
+            $logger->info("解析的标题是 $title");
             return ( tags => $tags, title => $title );
         } elsif ( $tags ne "" ) {
             return ( tags => $tags );

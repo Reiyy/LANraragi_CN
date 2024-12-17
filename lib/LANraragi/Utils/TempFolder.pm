@@ -94,7 +94,7 @@ sub clean_temp_partial {
     my $maxsize = LANraragi::Model::Config->get_tempmaxsize;
 
     if ( $size > $maxsize ) {
-        $logger->info( "Current temporary folder size is $size MBs, " . "Maximum size is $maxsize MBs. Cleaning." );
+        $logger->info( "当前临时文件夹大小为 $size MB, " . "最大大小为 $maxsize MB. 清理中。" );
 
         # Wipe thumbnail temp folder first
         if ( -e $tempdir . "/thumb" ) { unlink( $tempdir . "/thumb" ); }
@@ -112,7 +112,7 @@ sub clean_temp_partial {
         closedir $dir_fh;
 
         if ( scalar @folder_list <= 1 ) {
-            $logger->info("Only one folder left in /temp, aborting clean.");
+            $logger->info("仅剩一个文件夹在 /temp 中, 终止清理。");
             return;
         }
 
@@ -139,7 +139,7 @@ sub clean_temp_partial {
             }
         }
 
-        $logger->info("Done!");
+        $logger->info("搞定！");
     }
 }
 

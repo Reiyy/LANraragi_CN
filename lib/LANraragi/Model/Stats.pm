@@ -124,7 +124,7 @@ sub build_stat_hashes {
     $redistx->set( "LAST_JOB_TIME", time() );
 
     $redistx->exec;
-    $logger->info("Stat indexes built! ($archive_count archives)");
+    $logger->info("已建立统计索引！($archive_count 个档案)");
     $redis->quit;
     $redistx->quit;
 }

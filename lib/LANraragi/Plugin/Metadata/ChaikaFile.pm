@@ -54,11 +54,11 @@ sub get_tags {
     }
 
     if ( $newtags eq "" ) {
-        $logger->info("No Chaika File Found!");
+        $logger->info("未找到 Chaika 文件！");
         return ( error => "No Chaika File Found!" );
     } else {
 
-        $logger->info("Sending the following tags to LRR: $newtags");
+        $logger->info("正在将以下标签发送到LRR：$newtags");
 
         #Return a hash containing the new metadata
         return ( tags => $newtags, title => $newtitle );

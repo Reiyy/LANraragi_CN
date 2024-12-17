@@ -51,7 +51,7 @@ sub get_user_agent {
     my $ua     = Mojo::UserAgent->new;
 
     if ( $ipb_member_id ne "" && $ipb_pass_hash ne "" ) {
-        $logger->info("已提供 Cookies ($ipb_member_id $ipb_pass_hash $star $igneous)!");
+        $logger->info("已提供Cookies ($ipb_member_id $ipb_pass_hash $star $igneous)!");
 
         #Setup the needed cookies with both domains
         #They should translate to exhentai cookies with the igneous value generated
@@ -157,7 +157,7 @@ sub get_user_agent {
 
 
     } else {
-        $logger->info("未提供 Cookies，返回空的 UserAgent。");
+        $logger->info("未提供Cookies，返回空的UserAgent。");
     }
 
     return $ua;

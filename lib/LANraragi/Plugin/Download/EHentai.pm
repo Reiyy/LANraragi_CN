@@ -49,21 +49,21 @@ sub provide_url {
         $gID    = $1;
         $gToken = $2;
     } else {
-        return ( error => "Not a valid E-H URL!" );
+        return ( error => "不是有效的 E-H URL!" );
     }
 
     $logger->debug("gID: $gID, gToken: $gToken");
 
     my $archiverurl = "$domain\/archiver.php?gid=$gID&token=$gToken";
-    $logger->info("档案 URL: $archiverurl");
+    $logger->info("档案URL: $archiverurl");
 
     # Do a quick GET to check for potential errors
     my $archiverHtml = $lrr_info->{user_agent}->max_redirects(5)->get($archiverurl)->result->body;
     if ( index( $archiverHtml, "Invalid archiver key" ) != -1 ) {
-        return ( error => "Invalid archiver key. ($archiverurl)" );
+        return ( error => "无效的档案Key。 ($archiverurl)" );
     }
     if ( index( $archiverHtml, "This page requires you to log on." ) != -1 ) {
-        return ( error => "Invalid E*Hentai login credentials. Please make sure the login plugin has proper settings set." );
+        return ( error => "无效的 E*Hentai 登录凭据。请确保登录插件已正确设置。" );
     }
 
     # We only use original downloads, so we POST directly to the archiver form with dltype="org"
@@ -88,12 +88,12 @@ sub provide_url {
         # Parse that to get the final URL
         if ( $content =~ /.*document.location = "(.*)".*/gim ) {
             $finalURL = URI->new($1);
-            $logger->info("最终获取的 URL: $finalURL");
+            $logger->info("最终获取的URL: $finalURL");
         }
     };
 
     if ( $@ || $finalURL eq "" ) {
-        return ( error => "Couldn't proceed with an original size download: <pre>$content</pre>" );
+        return ( error => "无法继续下载原始大小：<pre>$content</pre>" );
     }
 
     # Set URL query parameters to ?start=1 to automatically trigger the download.

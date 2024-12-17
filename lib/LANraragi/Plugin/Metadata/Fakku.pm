@@ -106,7 +106,7 @@ sub get_tags {
     if ( $fakku_URL ne "" ) {
         $logger->debug("Detected FAKKU URL: $fakku_URL");
     } else {
-        $logger->info("No matching FAKKU Gallery Found!");
+        $logger->info("未找到匹配的 FAKKU 画廊！");
         return ( error => "No matching FAKKU Gallery Found!" );
     }
 
@@ -117,7 +117,7 @@ sub get_tags {
         return ( error => $@ );
     }
 
-    $logger->info("Sending the following tags to LRR: $newtags");
+    $logger->info("正在将以下标签发送到LRR：$newtags");
 
     #Return a hash containing the new metadata - it will be integrated in LRR.
     return ( tags => $newtags, title => $newtitle, summary => $newSummary );

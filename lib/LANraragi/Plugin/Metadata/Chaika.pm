@@ -60,22 +60,22 @@ sub get_tags {
     } else {
 
         # Try SHA-1 reverse search first
-        $logger->info( "Using thumbnail hash " . $lrr_info->{thumbnail_hash} );
+        $logger->info( "使用缩略图哈希 " . $lrr_info->{thumbnail_hash} );
         ( $newtags, $newtitle ) = tags_from_sha1( $lrr_info->{thumbnail_hash}, $addextra, $addother, $addsource, $jpntitle );
 
         # Try text search if it fails
         if ( $newtags eq "" ) {
-            $logger->info("No results, falling back to text search.");
+            $logger->info("没有结果，回退到文本搜索。");
             ( $newtags, $newtitle ) =
               search_for_archive( $lrr_info->{archive_title}, $lrr_info->{existing_tags}, $addextra, $addother, $addsource, $jpntitle );
         }
     }
 
     if ( $newtags eq "" ) {
-        $logger->info("No matching Chaika Archive Found!");
+        $logger->info("未找到匹配的 Chaika 档案！");
         return ( error => "No matching Chaika Archive Found!" );
     } else {
-        $logger->info("Sending the following tags to LRR: $newtags");
+        $logger->info("正在将以下标签发送到LRR：$newtags");
 
         #Return a hash containing the new metadata
         return ( tags => $newtags, title => $newtitle );

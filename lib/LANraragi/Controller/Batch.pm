@@ -164,7 +164,7 @@ sub socket {
                     {   json => {
                             id       => $id,
                             filename => $delStatus,
-                            message  => $delStatus ? "Archive deleted." : "Archive not found.",
+                            message  => $delStatus ? "档案已删除！" : "未找到档案。",
                             success  => $delStatus ? 1                  : 0
                         }
                     }
@@ -176,7 +176,7 @@ sub socket {
             $client->send(
                 {   json => {
                         id      => $id,
-                        message => "Unknown operation type $operation.",
+                        message => "未知操作类型 $operation.",
                         success => 0
                     }
                 }

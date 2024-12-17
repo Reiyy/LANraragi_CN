@@ -198,7 +198,7 @@
 			[% IF usingdefpass %]
 			//If the json has the "default password" flag, flash a friendly notification inviting the user to change his password
 			LRR.toast({
-				heading: '笨蛋！Baka！ヾ(≧へ≦)〃使用默认密码什么的，会被坏人看光光的，赶快改掉吧！',
+				heading: '笨蛋！Baka！ヾ(≧へ≦)〃<br>使用默认密码什么的，会被坏人看光光的，赶快改掉吧！',
 				text: '使用默认密码"kamimamita"<a href="login">登录</a><br>赶快<a href="config">修改</a>它吧！<br/>...或者你也可以禁用密码。<br/>但这无异于裸奔！',
 				icon: 'warning',
 				hideAfter: 25000,

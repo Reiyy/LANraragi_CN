@@ -150,7 +150,7 @@
 		[% END %]
 
 		[% IF plugin.login_from %]
-		<i class="fa fa-plug" aria-hidden="true"></i> This plugin depends on the login plugin "[% plugin.login_from %]".
+		<i class="fa fa-plug" aria-hidden="true"></i> 此插件依赖于登录插件 "[% plugin.login_from %]".
 		[% END %]
 
 	</div>

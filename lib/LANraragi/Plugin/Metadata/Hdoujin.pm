@@ -68,7 +68,7 @@ sub get_tags {
         unlink $filepath;
 
         #Return tags
-        $logger->info("Sending the following tags to LRR: $tags");
+        $logger->info("正在将以下标签发送到LRR：$tags");
         return ( tags => $tags );
 
     } else {

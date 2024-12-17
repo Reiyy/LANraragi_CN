@@ -76,7 +76,7 @@ sub get_tags {
         # URL was passed as a oneshot param, done!
         $vault_id = parse_vault_url($oneshot_param);
         if ( !defined($vault_id) ) {
-            $logger->info("Failed parsing URL $oneshot_param");
+            $logger->info("解析URL失败 $oneshot_param");
 
             # Don't continue execution if the oneshot URL was invalid. Raise an error instead to avoid surprises
             return ( error => "Did not recognize the URL, is it a proper vault URL?" );
@@ -85,7 +85,7 @@ sub get_tags {
 
        # There might be a hentag URL inside a tag. If it fails parsing, that's okay, just continue execution with any other approach
         if ( defined($hentag_source) ) {
-            $logger->info("Found an existing (parsable) hentag source, will use that!");
+            $logger->info("找到一个现有（可解析的）hentag来源，将使用它！");
             $vault_id = parse_vault_url($hentag_source);
         }
     } else {
@@ -124,7 +124,7 @@ sub get_tags {
         my ( $tags, $title ) = tags_from_hentag_api_json( $json, $allowed_languages, $archive_title );
 
         #Return tags IFF data is found
-        $logger->info("Sending the following tags to LRR: $tags");
+        $logger->info("正在将以下标签发送到LRR：$tags");
         if ($title) {
             $logger->info("Parsed title is $title");
             return ( tags => $tags, title => $title );

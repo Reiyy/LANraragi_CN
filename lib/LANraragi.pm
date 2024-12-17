@@ -196,7 +196,7 @@ sub shutdown_from_pid {
         my $oldproc = ${ retrieve($file) };
         my $pid     = $oldproc->pid;
 
-        say "Killing process $pid from $file";
+        say "正在终止来自 $file 的进程 $pid";
         $oldproc->kill();
         unlink($file);
     }
@@ -221,7 +221,7 @@ sub migrate_old_settings {
     my @keys      = $redis->keys('LRR_*');
 
     foreach my $key (@keys) {
-        say "Migrating $key to database $config_db";
+        say "正在移动 $key 到数据库 $config_db";
         $redis->move( $key, $config_db );
     }
 

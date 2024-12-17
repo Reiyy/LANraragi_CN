@@ -23,7 +23,7 @@ sub exec_enabled_plugins_on_file {
     my $id     = shift;
     my $logger = get_logger( "Auto-Plugin", "lanraragi" );
 
-    $logger->info("Executing enabled metadata plugins on archive with id $id.");
+    $logger->info("正在对档案ID为 $id 的档案执行已启用的元数据插件。");
 
     my $successes = 0;
     my $failures  = 0;
@@ -173,7 +173,7 @@ sub exec_download_plugin {
         my %result = $plugin->provide_url( \%infohash, @settings );
 
         if ( exists $result{error} ) {
-            $logger->info( "Downloader plugin failed to provide an URL, aborting now. Error: " . $result{error} );
+            $logger->info( "下载器插件未能提供URL，正在中止。错误" . $result{error} );
             return \%result;
         }
 
@@ -212,7 +212,7 @@ sub exec_metadata_plugin {
 
         # If the thumbnail hash is empty or undefined, we'll generate it here.
         unless ( length $thumbhash ) {
-            $logger->info("Thumbnail hash invalid, regenerating.");
+            $logger->info("缩略图哈希无效，正在重新生成。");
             my $thumbdir = LANraragi::Model::Config->get_thumbdir;
 
             # Eval the thumbnail extraction, as it can error out and die
@@ -259,7 +259,7 @@ sub exec_metadata_plugin {
 
         # Process new metadata.
         if ( LANraragi::Model::Config->enable_tagrules ) {
-            $logger->info("Applying tag rules...");
+            $logger->info("应用标签规则中...");
             my @rules = LANraragi::Utils::Database::get_computed_tagrules();
             @tagarray = rewrite_tags( \@tagarray, \@rules );
         }

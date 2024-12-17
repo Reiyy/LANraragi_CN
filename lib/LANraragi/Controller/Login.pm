@@ -18,14 +18,14 @@ sub check {
 
     if ( $ppr->match($pw) ) {
 
-        $self->LRR_LOGGER->info( "Successful login attempt from " . $self->tx->remote_address );
+        $self->LRR_LOGGER->info( "成功的登录，来自 " . $self->tx->remote_address );
 
         $self->session( is_logged  => 1 );
         $self->session( expiration => 60 * 60 * 24 );
         $self->redirect_to($redirect);
     } else {
 
-        $self->LRR_LOGGER->warn( "Failed login attempt with password '$pw' from " . $self->tx->remote_address );
+        $self->LRR_LOGGER->warn( "失败的登录，使用密码 '$pw'，来自 " . $self->tx->remote_address );
 
         $self->render(
             template  => "login",

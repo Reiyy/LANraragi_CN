@@ -23,7 +23,7 @@ sub plugin_info {
         parameters => [
               { type => "string", desc => "浏览器 UserAgent 字符串（可以在 http://useragentstring.com/ 找到您的浏览器的 UserAgent" },
 			{ type => "string", desc => "nhentai.net 域名的 csrftoken Cookie" },
-			{ type => "string", desc => "nhentai.net 域名的cf_clearance Cookie" }
+			{ type => "string", desc => "nhentai.net 域名的 cf_clearance Cookie" }
         ]
     );
 
@@ -51,7 +51,7 @@ sub get_user_agent {
     my $ua     = Mojo::UserAgent->new;
 
     if ( $useragent ne "" && $csrftoken ne "" && $cf_clearance ne "") {
-        $logger->info("Useragent and Cookies provided ($useragent $csrftoken $cf_clearance)!");
+        $logger->info("已提供UA和Cookies ($useragent $csrftoken $cf_clearance)!");
         $ua->transactor->name($useragent);
 
         #Setup the needed cookies
@@ -74,7 +74,7 @@ sub get_user_agent {
         );
 
     } else {
-        $logger->info("No cookies provided, returning blank UserAgent.");
+        $logger->info("未提供Cookies，返回空的UserAgent。");
     }
 
     return $ua;

@@ -68,7 +68,7 @@ sub get_user_agent {
         )
 
     } else {
-        $logger -> info("No cookies provided, returning blank UserAgent.");
+        $logger -> info("未提供Cookies，返回空的UserAgent。");
     }
 
     return $ua;

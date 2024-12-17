@@ -243,7 +243,7 @@ sub clean_database {
     eval {
         # Save an autobackup somewhere before cleaning
         my $outfile = getcwd() . "/autobackup.json";
-        $logger->info("Saving automatic backup to $outfile");
+        $logger->info("正在将自动备份保存到 $outfile");
         open( my $fh, '>', $outfile );
         print $fh LANraragi::Model::Backup::build_backup_JSON();
         close $fh;

@@ -34,7 +34,7 @@ sub do_login {
     my $ua     = Mojo::UserAgent->new;
 
     if ( $fakku_sid ne "" ) {
-        $logger->info("Cookie provided ($fakku_sid)!");
+        $logger->info("已提供Cookie ($fakku_sid)!");
         $ua->cookie_jar->add(
             Mojo::Cookie::Response->new(
                 name   => 'fakku_sid',
@@ -44,7 +44,7 @@ sub do_login {
             )
         );
     } else {
-        $logger->info("No cookies provided, returning blank UserAgent.");
+        $logger->info("未提供Cookie，返回空白UserAgent。");
     }
 
     return $ua;

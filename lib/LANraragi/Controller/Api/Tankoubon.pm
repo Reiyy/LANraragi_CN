@@ -84,7 +84,7 @@ sub update_archive_list {
 
     if ($result) {
         my %tankoubon      = LANraragi::Model::Tankoubon::get_tankoubon($tankid);
-        my $successMessage = "Updated archives of tankoubon \"$tankoubon{name}\"!";
+        my $successMessage = "已更新单行本 \"$tankoubon{name}\" 中的档案!";
 
         render_api_response( $self, "update_archive_list", undef, $successMessage );
     } else {
@@ -101,12 +101,12 @@ sub add_to_tankoubon {
     my ( $result, $err ) = LANraragi::Model::Tankoubon::add_to_tankoubon( $tankid, $arcid );
 
     if ($result) {
-        my $successMessage = "Added $arcid to tankoubon $tankid!";
+        my $successMessage = "已添加 $arcid 到单行本 $tankid!";
         my %tankoubon      = LANraragi::Model::Tankoubon::get_tankoubon($tankid);
         my $title          = LANraragi::Model::Archive::get_title($arcid);
 
         if ( %tankoubon && defined($title) ) {
-            $successMessage = "Added \"$title\" to tankoubon \"$tankoubon{name}\"!";
+            $successMessage = "已添加 \"$title\" 到单行本 \"$tankoubon{name}\"!";
         }
 
         render_api_response( $self, "add_to_tankoubon", undef, $successMessage );
@@ -124,12 +124,12 @@ sub remove_from_tankoubon {
     my ( $result, $err ) = LANraragi::Model::Tankoubon::remove_from_tankoubon( $tankid, $arcid );
 
     if ($result) {
-        my $successMessage = "Removed $arcid from tankoubon $tankid!";
+        my $successMessage = "已删除 $arcid 从单行本 $tankid 中!";
         my %tankoubon      = LANraragi::Model::Tankoubon::get_tankoubon($tankid);
         my $title          = LANraragi::Model::Archive::get_title($arcid);
 
         if ( %tankoubon && defined($title) ) {
-            $successMessage = "Removed \"$title\" from tankoubon \"$tankoubon{name}\"!";
+            $successMessage = "已删除 \"$title\" 从单行本 \"$tankoubon{name}\"中!";
         }
 
         render_api_response( $self, "remove_from_tankoubon", undef, $successMessage );

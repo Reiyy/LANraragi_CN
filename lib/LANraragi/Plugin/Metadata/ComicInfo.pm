@@ -94,7 +94,7 @@ sub get_tags {
         }
         my $tags = join( ", ", @found_tags );
 
-        $logger->info("Sending the following tags to LRR: $tags");
+        $logger->info("正在将以下标签发送到LRR：$tags");
         return ( tags => $tags );
     }
     
