@@ -73,6 +73,8 @@ COPY /tools/build/docker/s6/s6-rc.d/ /etc/s6-overlay/s6-rc.d/
 #Copy setup script as-is since no changes are needed between 2.x and 3.x
 COPY /tools/build/docker/s6/cont-init.d/01-lrr-setup /etc/s6-overlay/s6-rc.d/init/
 #COPY /tools/build/docker/s6/fix-attrs.d/ /etc/fix-attrs.d/
+#手动赋予执行权限修复启动权限问题
+RUN chmod +x /etc/s6-overlay/s6-rc.d/init/01-lrr-setup
 
 # Persistent volumes
 VOLUME [ "/root/lanraragi/content" ]
