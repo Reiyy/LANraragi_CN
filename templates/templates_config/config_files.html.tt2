@@ -1,0 +1,105 @@
+<tr>
+    <td class="option-td">
+        <h2 class="ih"> 档案目录 </h2>
+    </td>
+    <td class="config-td">
+        <input class="stdinput" style="width:100%" maxlength="255" size="20" value="[% dirname %]" name="dirname"
+            type="text" [% IF forceddirname %] disabled title="此配置项由环境变量强制执行。" [%
+            END %]>
+        <br> 请输入存放档案的目录。如果该目录不存在，将会自动创建。
+        <br>确保运行LANraragi的系统用户具有该目录的读取权限。<br>
+    </td>
+</tr>
+
+<tr>
+    <td class="option-td">
+        <h2 class="ih"> 群晖 eCryptFS 兼容模式 </h2>
+    </td>
+    <td class="config-td">
+        [% IF enablecryptofs %]
+        <input id="enablecryptofs" name="enablecryptofs" class="fa" type="checkbox" checked> [% ELSE %]
+        <input id="enablecryptofs" name="enablecryptofs" class="fa" type="checkbox"> [% END %]
+        <label for="enablecryptofs">
+            <br>如果启用，LANraragi将截断档案文件名至143字节，这是eCryptFS所接受的最大值。
+        </label>
+    </td>
+</tr>
+
+<tr></tr>
+
+<tr>
+    <td class="option-td">
+        <input id="rescan-button" class='stdbtn' type='button' value='重新扫描档案目录' />
+    </td>
+    <td class="config-td">
+        点击此按钮来触发档案目录的重新扫描，以防缺失文件，<br>
+        或一些数据，比如总页数。<br>
+        <br>
+    </td>
+</tr>
+
+<tr>
+    <td class="option-td">
+        <h2 class="ih"> 最大 <br>临时目录大小 </h2>
+    </td>
+    <td class="config-td">
+        <input class="stdinput" style="width:100%" maxlength="255" size="20" value="[% tempmaxsize %]"
+            name="tempmaxsize" type="text">
+        <br>单位是MB。临时文件夹包含最近打开的档案，使后续阅读时可以更快加载。<br>
+        当临时目录大小超过设定值时，将自动清空它。
+    </td>
+</tr>
+
+<tr>
+    <td class="option-td">
+        <input id='clean-temp' class='stdbtn' type='button' value='清空临时目录' />
+    </td>
+    <td class="config-td">
+        当前大小:
+        <h2 style="display:inline"><span id="tempsize"> [%tempsize%] </span> MBs </h2>
+        <br>点击此按钮来手动清空临时目录。
+    </td>
+</tr>
+
+<tr></tr>
+
+<tr>
+    <td class="option-td">
+        <input id='reset-search-cache' class='stdbtn' type='button' value='重置搜索缓存' />
+    </td>
+    <td class="config-td">
+        在档案列表中进行的最后一次搜索会被缓存，以提升加载速度。<br>
+        如果缓存出问题了，点击此按钮来重置它。<br>
+        <br>
+    </td>
+</tr>
+
+<tr></tr>
+
+<tr>
+    <td class="option-td">
+        <input id='clear-new-tags' class='stdbtn' type='button' value='清除“NEW”标记' />
+    </td>
+    <td class="config-td">
+        新上传的档案在索引中会被打上“NEW”标记，直到你打开它们。<br>
+        如果你想清除这些标记，请点击此按钮。<br>
+        <br>
+    </td>
+</tr>
+
+<tr>
+    <td class="option-td">
+        <h2 class="ih">替换重复档案</h2>
+    </td>
+    <td class="config-td">
+        [% IF replacedupe %]
+        <input id="replacedupe" name="replacedupe" class="fa" type="checkbox" checked> [% ELSE %]
+        <input id="replacedupe" name="replacedupe" class="fa" type="checkbox"> [% END %]
+        <label for="replacedupe">
+            <br>如果启用，当添加具有相同名称的新档案时，
+            LANraragi将覆盖旧档案。
+            <br> <i class="fas fa-exclamation-triangle" style="color:red"></i> 旧档案被替换时，将删除其元数据！
+            请谨慎使用。
+        </label>
+    </td>
+</tr>

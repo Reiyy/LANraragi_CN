@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<head>
+	<title>[% title %]</title>
+
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="apple-mobile-web-status-bar-style" content="black" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link type="image/png" rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="app.webappmanifest" />
+	<link rel="stylesheet" type="text/css" href="/css/lrr.css?[% version %]" />
+
+	<link rel="stylesheet" type="text/css" href="/css/vendor/fontawesome-all.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/jquery.contextMenu.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/awesomplete.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/tippy.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/allcollapsible.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/swiper-bundle.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/ReactToastify.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/sweetalert2.min.css" />
+	[% csshead %]
+
+	<script src="/js/vendor/jquery.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/jquery.dataTables.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/preact.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/hooks.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/compat.umd.js" type="text/JAVASCRIPT"></script>
+	<script>window.React = window.preactCompat; window.react = window.preactCompat;</script>
+	<script src="/js/vendor/clsx.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/react-toastify.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/jquery.ui.position.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/jquery.contextMenu.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/awesomplete.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/popper.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/tippy-bundle.umd.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/marked.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/allcollapsible.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/swiper-bundle.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/sweetalert2.min.js" type="text/JAVASCRIPT"></script>
+
+	<script src="/js/index.js?[% version %]" type="text/JAVASCRIPT"></script>
+	<script src="/js/common.js?[% version %]" type="text/JAVASCRIPT"></script>
+	<script src="/js/server.js?[% version %]" type="text/JAVASCRIPT"></script>
+	<script src="/js/index_datatables.js?[% version %]" type="text/JAVASCRIPT"></script>
+
+</head>
+
+<body>
+
+	[% IF userlogged %]
+	<p id="nb">
+		<i class="fa fa-caret-right"></i>
+		<a href="./upload">添加档案</a>
+		<span style="margin-left:5px"></span>
+		<i class="fa fa-caret-right"></i>
+		<a href="./batch">批量操作</a>
+		<span style="margin-left:5px"></span>
+		<i class="fa fa-caret-right"></i>
+		<a href="./config">设置</a>
+		<span style="margin-left:5px"></span>
+		<i class="fa fa-caret-right"></i>
+		<a href="./config/categories">修改分类</a>
+		<span style="margin-left:5px"></span>
+		<i class="fa fa-caret-right"></i>
+		<a href="./stats">统计</a>
+		<i class="fa fa-caret-right"></i>
+		<a href="./logs">日志</a>
+	</p>
+	[% ELSE %]
+	<p id="nb">
+		<i class="fa fa-caret-right"></i>
+		<a href="./login">管理员登录</a>
+		<span style="margin-left:5px"></span>
+		<i class="fa fa-caret-right"></i>
+		<a href="./stats">统计</a>
+	</p>
+	[% END %]
+
+	<div class='ido'>
+		<h1 class='ih'>[% motd %]</h1>
+		<div id='toppane'>
+			<div class='idi'>
+				<div id="category-container">
+					<!-- Categories go here -->
+				</div>
+				<input type='text' id='search-input' class='search stdinput' size='90' style='width:95%'
+					placeholder='搜索 标题、作者、系列、语言及标签' />
+				<input id='apply-search' class='searchbtn stdbtn' type='button' value='应用筛选' />
+				<input id='clear-search' class='searchbtn stdbtn' type='button' value='清除筛选' />
+			</div>
+
+			<ul class="collapsible index-carousel with-right-caret">
+				<li class="option-flyout"
+					style="text-align: left;display: flex;flex-wrap: wrap;justify-content: space-between;">
+					<div class="collapsible-title caret-right" style="display: flex;flex: 1 1 0;overflow: hidden;">
+						<i id="carousel-icon" class="fa"></i>
+						<div id="carousel-title"
+							style="display:inline;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-left: 8px;"
+							title="点击来显示当前搜索中符合筛选条件的档案">...</div>
+					</div>
+					<div class="collapsible-right">
+						<a class="fa fa-2x fa-sync-alt" style="margin-bottom: -4px; display:none" id="reload-carousel"
+							href="#" title="刷新选择"></a>
+						<a class="fa fa-2x fa-ellipsis-h" style="margin-bottom: -4px; margin-left: 12px"
+							id="carousel-mode-menu" href="#" title="轮播选项"></a>
+					</div>
+
+					<div class="collapsible-body" style="flex: 1 0 100%;overflow: hidden;box-sizing: border-box;">
+						<div class="swiper index-carousel-container">
+							<a href="#" class="fa fa-3x fa-chevron-left carousel-prev"></a>
+							<a href="#" class="fa fa-3x fa-chevron-right carousel-next"></a>
+							<div class="swiper-wrapper"></div>
+							<div id="carousel-loading"
+								style="height: 344px; display:flex; justify-content: center; align-items: center;">
+								<i class="fa fa-4x fa-stroopwafel fa-spin"></i>
+							</div>
+							<div id="carousel-empty"
+								style="height: 344px; display: flex; justify-content: center; align-items: center; flex-direction: column;">
+								<i class="fa fa-4x fa-sad-cry"></i>
+								<span style="margin-top: 12px;">无
+									结果。</span>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+			<div class="table-options" style="display: none;">
+				<div class="thumbnail-options">排序方式：
+					<select class="favtag-btn" id="namespace-sortby">
+						<option selected value="title">标题</option>
+						<option selected value="date_added">日期</option>
+					</select>
+					<a class="fa fa-sort-alpha-down fa-2x table-option" id="order-sortby" href="#"
+						title="排列顺序"></a>
+
+					<input id="thumbnail-crop" class="fa table-option" type="checkbox"
+						title="如果启用，不为常规A4比例的缩略图将靠左裁切。">
+					<label for="thumbnail-crop" style="vertical-align: middle; padding-top:6px">裁切缩略图</label>
+				</div>
+				<div style="margin-left:auto">跳转至：
+					<select class="favtag-btn" id="page-select">
+					</select>
+					<a class="fa fa-list fa-2x mode-toggle thumbnail-toggle table-option" href="#"
+						title="切换至紧凑模式"></a>
+					<a class="fa fa-table fa-2x mode-toggle compact-toggle table-option" href="#"
+						title="切换至缩略图模式"></a>
+				</div>
+			</div>
+
+			<table class="itg datatables">
+				<thead class="list" style="display: none;">
+					<tr>
+						<th id="titleheader">
+							<a>标题</a>
+						</th>
+						<th id="customheader1">
+							<i id="edit-header-1" class="fas fa-pencil-alt edit-header-btn"
+								title="编辑此列"></i>
+							<a id="header-1">作者</a>
+						</th>
+						<th id="customheader2">
+							<i id="edit-header-2" class="fas fa-pencil-alt edit-header-btn"
+								title="编辑此列"></i>
+							<a id="header-2">系列</a>
+						</th>
+						<th id="tagsheader">
+							<a>标签</a>
+						</th>
+					</tr>
+				</thead>
+				<tbody class="list" style="display: none;">
+				</tbody>
+			</table>
+
+			<div id="json-error" style="display:none">
+				<h1 style="color: red">
+					<i class="fas fa-bomb"></i> 我虽然不知道所有事情，但我知道数据库寄了，
+					，伙计们。
+					<i class="fas fa-bomb"></i>
+				</h1>
+				<h2>数据库缓存已损坏，因此LANraragi无法显示您的档案列表。</h2>
+			</div>
+
+		</div>
+	</div>
+
+	[% INCLUDE footer %]
+
+	<script>
+
+		// Last few remains of JS using server-provided data
+		jQuery(() => {
+
+			[% IF usingdefpass %]
+			//If the json has the "default password" flag, flash a friendly notification inviting the user to change his password
+			LRR.toast({
+				heading: '笨蛋！Baka！ヾ(≧へ≦)〃<br>使用默认密码什么的，会被坏人看光光的，赶快改掉吧！',
+				text: '使用默认密码"kamimamita"<a href="login">登录</a><br>赶快<a href="config">修改</a>它吧！<br/>...或者你也可以禁用密码。<br/>但这无异于裸奔！',
+				icon: 'warning',
+				hideAfter: 25000,
+				closeOnClick: false,
+				draggable: false,
+			});
+			[% END %]
+
+			const catList = [];
+			[% IF categories.size > 0 %]
+			[% FOREACH categories %]
+			// Push a tuple into catList
+			catList.push({
+				name: "[% name %]",
+				id: "[% id %]",
+			});
+			[% END %]
+			[% END %]
+
+			// Initialize context menu
+			$.contextMenu({
+				selector: '.context-menu',
+				build: ($trigger, e) => {
+					return {
+						callback: function (key, options) {
+							Index.handleContextMenu(key, $(this).attr("id"));
+						},
+						items: {
+							"read": { name: "阅读", icon: "fas fa-book" },
+							"download": { name: "下载", icon: "fas fa-save" },
+							[% IF userlogged %]
+							"sep1": "---------",
+							"edit": { name: "编辑元数据", icon: "fas fa-pencil-alt" },
+							"delete": { name: "删除", icon: "fas fa-trash-alt" },
+							"collections": {
+								"name": "添加到分类",
+								"icon": "fas fa-search-plus",
+								"items": Index.loadContextMenuCategories(catList, $trigger.attr("id"))
+							}
+							[% END %]
+						}
+					}
+				}
+			});
+		});
+	</script>
+
+	<div id="overlay-shade"> </div>
+
+	<div id="updateOverlay" class="id1 base-overlay small-overlay" style="display:none">
+		<h2 class="ih" style="text-align:center">新版发行说明</h2>
+		<div id="changelog"></div>
+	</div>
+
+
+</body>
+
+</html>

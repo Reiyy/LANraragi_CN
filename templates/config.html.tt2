@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<head>
+	<title>[% title %] - 设置</title>
+
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="apple-mobile-web-status-bar-style" content="black" />
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link type="image/png" rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="app.webappmanifest" />
+	<link rel="stylesheet" type="text/css" href="/css/lrr.css?[% version%]" />
+	<link rel="stylesheet" type="text/css" href="/css/config.css" />
+
+	<link rel="stylesheet" type="text/css" href="/css/vendor/fontawesome-all.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/allcollapsible.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/ReactToastify.min.css" />
+	<link rel="stylesheet" type="text/css" href="/css/vendor/sweetalert2.min.css" />
+	[% csshead %]
+
+	<script src="/js/vendor/jquery.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/preact.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/hooks.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/compat.umd.js" type="text/JAVASCRIPT"></script>
+	<script>window.React = window.preactCompat; window.react = window.preactCompat;</script>
+	<script src="/js/vendor/clsx.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/react-toastify.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/allcollapsible.min.js" type="text/JAVASCRIPT"></script>
+	<script src="/js/vendor/sweetalert2.min.js" type="text/JAVASCRIPT"></script>
+
+	<script src="/js/common.js?[% version %]" type="text/JAVASCRIPT"></script>
+	<script src="/js/server.js?[% version %]" type="text/JAVASCRIPT"></script>
+	<script src="/js/config.js?[% version %]" type="text/JAVASCRIPT"></script>
+
+</head>
+
+<body>
+
+	<div class="ido">
+		<h2 class="ih" style="text-align:center">管理员设置</h2>
+		<br>
+		<div class="left-column">
+
+			<img class="logo-container" src="./img/logo.png">
+			<br>
+			<h1 style="margin-bottom: 2px">LANraragi</h1>
+			版本 [% version %], "[% vername %]"
+			<br>
+			前汉化者：<a href="http://yuanfangblog.xyz"> 昭君 </a>、<a href="http://bs.windycloud.cn"> WindyMadman </a>
+			<br>
+			汉化者：<a href="https://reiyy.com"> 夜棂依Yareiy </a>
+			<br>
+			<h2>选择一个分类来显示相关设置项。</h2>
+			<br />
+			<input id='save' class='stdbtn' type='button' value='保存配置' /><br />
+			<input id='plugin-config' class='stdbtn' type='button' value='插件配置' />
+			<input id='backup' class='stdbtn' type='button' value='数据库备份/恢复' />
+			<input id='return' class='stdbtn' type='button' value='返回档案库' />
+
+		</div>
+		<form class="right-column" name="editConfigForm" id="editConfigForm" enctype="multipart/form-data" method="post"
+			autocomplete="off">
+
+			<ul class="collapsible extensible with-right-caret">
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-cubes" aria-hidden="true"></i> 全局设置
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_global %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-paint-brush" aria-hidden="true"></i> 主题
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_theme %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-shield-alt" aria-hidden="true"></i> 安全
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_security %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-file-archive" aria-hidden="true"></i> 档案文件
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_files %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-tags" aria-hidden="true"></i> 标签和缩略图
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_tags %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+				<li class="option-flyout">
+					<div class="collapsible-title caret-right">
+						<i class="fa fa-satellite" aria-hidden="true"></i> 后台进程
+					</div>
+					<div class="collapsible-body">
+						<table style="margin:auto; font-size:9pt;">
+							<tbody>
+								[% INCLUDE templates_config/config_shinobu %]
+							</tbody>
+						</table>
+					</div>
+				</li>
+			</ul>
+		</form>
+	</div>
+	[% INCLUDE footer %]
+	<a href="https://holopin.io/collect/clcv0owgf187308lgzgmbys80">🐫</a>
+</body>
+
+</html>

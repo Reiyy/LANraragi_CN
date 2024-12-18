@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<head>
+    <title>[% title %]</title>
+
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="apple-mobile-web-status-bar-style" content="black" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <link type="image/png" rel="icon" href="favicon.ico" />
+    <link rel="manifest" href="app.webappmanifest" />
+    <link rel="stylesheet" type="text/css" href="/css/lrr.css?[% version %]" />
+    <link rel="stylesheet" type="text/css" href="/css/config.css?[% version %]" />
+
+    <link rel="stylesheet" type="text/css" href="./css/vendor/fontawesome-all.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/vendor/ReactToastify.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/vendor/sweetalert2.min.css" />
+    [% csshead %]
+
+    <script src="./js/vendor/jquery.min.js" type="text/javascript"></script>
+    <script src="/js/vendor/preact.umd.js" type="text/JAVASCRIPT"></script>
+    <script src="/js/vendor/hooks.umd.js" type="text/JAVASCRIPT"></script>
+    <script src="/js/vendor/compat.umd.js" type="text/JAVASCRIPT"></script>
+    <script>window.React = window.preactCompat; window.react = window.preactCompat;</script>
+    <script src="/js/vendor/clsx.min.js" type="text/JAVASCRIPT"></script>
+    <script src="/js/vendor/react-toastify.umd.js" type="text/JAVASCRIPT"></script>
+    <script src="/js/vendor/sweetalert2.min.js" type="text/JAVASCRIPT"></script>
+
+    <script src="./js/common.js?[% version %]" type="text/javascript"></script>
+    <script src="./js/server.js?[% version %]" type="text/javascript"></script>
+    <script src="./js/reader.js?[% version %]" type="text/javascript"></script>
+
+    <script type="module">
+        import('./js/vendor/fscreen.esm.js').then(r => {
+            window.fscreen = r.default;
+            Reader.initializeAll();
+        })
+    </script>
+</head>
+
+<body>
+
+    <div id="i1" class="sni">
+        <div id="i2">
+            <h1 id="archive-title">...</h1>
+
+            [% INCLUDE pagesel %] [% INCLUDE arrows %] [% INCLUDE fileinfo %]
+        </div>
+
+        <div id="i3" class="loading">
+            <div class="loading-overlay">
+                <p class="loading-spinner">
+                    <i id="spinner" class="fa fa-fan fa-spin"></i>
+                </p>
+            </div>
+
+            <a id="display">
+                <img id="img" class="reader-image" src=""><img id="img_doublepage" class="reader-image" src="">
+            </a>
+
+        </div>
+
+        <div id="i4">
+            [% INCLUDE fileinfo %] [% INCLUDE pagesel %] [% INCLUDE arrows %]
+        </div>
+
+        <div id="i5">
+            <div class="sb">
+                <a href="./?[% ref_query %]" id="return-to-index" title="看完了？返回档案索引">
+                    <i class="fa fa-angle-down fa-3x"></i>
+                </a>
+            </div>
+        </div>
+
+        <div id="i7" class="if">
+            <i class="fa fa-caret-right fa-lg"></i>
+            <a id="imgLink" style="cursor:pointer;">查看原图</a>
+            <i class="fa fa-caret-right fa-lg"></i>
+            <a href="./random">切换到另一个随机档案</a>
+        </div>
+
+    </div>
+
+    <script>
+        // This would be better in the reader.js file, but it's faster to source this data from the server template for now.
+        Reader.trackProgressLocally = "[% use_local %]" === "1";
+    </script>
+
+    <div id="overlay-shade"></div>
+    <div id="archivePagesOverlay" class="id1 base-overlay page-overlay" style="display:none" loaded="false">
+        <h2 class="ih" id="archive-title-overlay" style="text-align:center">档案预览</h2>
+        <div id="tagContainer" class="caption caption-tags caption-reader">
+            <br>
+            <div style="margin-bottom:16px;">
+                <div class="id3 nocrop reader-thumbnail">
+                    <img src="./api/archives/[% id %]/thumbnail" />
+                </div>
+
+                [% IF userlogged %]
+                <div style="display:inline-block; vertical-align: middle;">
+
+                    <h2>管理员选项</h2>
+
+                    <input class="stdbtn" type='button' id="set-thumbnail" value="将此页设为缩略图"
+                        style="width:160px" title="将当前页设为缩略图。" />
+                    <input id="regenerate-cache" class='stdbtn' type='button' value='清空档案缓存'
+                        style="width:160px" />
+                    <br>
+                    <input id="edit-archive" class='stdbtn' type='button' value='编辑档案元数据'
+                        style="width:160px" />
+                    <input id="delete-archive" class='stdbtn' type='button' value='删除档案'
+                        style="width:160px" />
+
+                    <h2>分类</h2>
+
+                    <div id="archive-categories" style="display:inline-block">
+                        [% FOREACH arc_categories %]
+                        <div class="gt" style="font-size:14px; padding:4px">
+                            <a href="/?c=[% id %]">
+                                <span class="label">[% name %]</span>
+                                <a href="#" class="remove-category" data-id="[% id %]"
+                                    style="margin-left:4px; margin-right:2px">×</a>
+                            </a>
+                        </div>
+                        [% END %]
+                    </div>
+
+                    <br />
+                    <span>添加到 : </span>
+                    <select id="category" class="favtag-btn" style="width:200px; margin-right: 8px">
+                        <option selected value=""> -- 无分类 -- </option>
+                        [% FOREACH categories %]
+                        <option value="[% id %]">[% name %]</option>
+                        [% END %]
+                    </select>
+                    <a class="fas fa-plus" id="add-category" href="#" title="添加档案到分类"></a>
+                </div>
+                [% END %]
+            </div>
+
+        </div>
+
+        <br><br>
+
+        <h2 class="ih" style="text-align:center">页数</h2>
+
+        <div id="extract-spinner" style="width: 80%; margin-left: auto; margin-right: auto">
+            <p class="loading-spinner">
+                <i id="spinner" class="fa fa-dharmachakra fa-4x fa-spin"></i>
+            </p>
+            正在处理...
+        </div>
+    </div>
+    </div>
+    </div>
+    <div id="settingsOverlay" class="id1 base-overlay small-overlay" style="display:none">
+        [% INCLUDE config %]
+    </div>
+
+    <canvas id="dpcanvas" style="display:none" width="100" height="100"></canvas>
+
+    <div id="reader-help" style="display: none;">
+        <div class="navigation-help-toast">
+            你可以使用以下方式在页面之间导航：
+            <ul>
+                <li>箭头图标</li>
+                <li>A/D 键</li>
+                <li>使用键盘方向键（和空格键）</li>
+                <li>点击图像左/右两侧</li>
+            </ul>
+            <br>其他键盘快捷键：
+            <ul>
+                <li>M: 切换漫画模式（从右到左方向阅读）</li>
+                <li>O: 显示高级阅读器选项。</li>
+                <li>P: 切换双页模式</li>
+                <li>Q: 打开档案预览及档案选项。</li>
+                <li>R: 打开一个随机档案。</li>
+                <li>F: 切换全屏模式</li>
+            </ul>
+            <br>要返回档案库，可点击指向下方的箭头或使用 Backspace 键。
+        </div>
+    </div>
+
+    [% INCLUDE footer %]
+</body>
+
+</html>
+
+
+
+[% #compute those blocks before getting to the main html %]
+
+<!-- -->
+[% BLOCK config %]
+
+<h2 class="ih" style="text-align:center">阅读器选项</h2>
+
+<h1 class="ih config-panel">这些选项会自动保存 -- 单击即可!</h1>
+
+<div id="fit-mode">
+    <h2 class="config-panel"> 显示缩放方式 </h2>
+    <input id="fit-container" class="favtag-btn config-btn" type="button" value="自适应">
+    <input id="fit-width" class="favtag-btn config-btn" type="button" value="适应宽度">
+    <input id="fit-height" class="favtag-btn config-btn" type="button" value="适应高度">
+</div>
+
+<div id="container-width">
+    <h2 class="config-panel"> 显示宽度（像素或百分比）</h2>
+    <input id="container-width-input" class="stdinput" style="display:inline; width: 70%;"
+        placeholder="默认值为 1200px，在双页模式下为 90%。">
+    <input id="container-width-apply" class="favtag-btn config-btn" type="button" style="display:inline;" value="应用">
+</div>
+
+<div id="toggle-double-mode">
+    <h2 class="config-panel"> 页面渲染 </h2>
+    <input id="single-page" class="favtag-btn config-btn" type="button" value="单页">
+    <input id="double-page" class="favtag-btn config-btn" type="button" value="双页">
+</div>
+
+<div id="toggle-manga-mode">
+    <h2 class="config-panel"> 阅读方向 </h2>
+    <span class="config-panel"></span>
+    <input id="normal-mode" class="favtag-btn config-btn" type="button" value="左到右">
+    <input id="manga-mode" class="favtag-btn config-btn" type="button" value="右到左">
+</div>
+
+<div id="preload-images">
+    <h2 class="config-panel"> 预载图片数</h2>
+    <input id="preload-input" class="stdinput" style="display:inline" placeholder="默认为两张图片。">
+    <input id="preload-apply" class="favtag-btn config-btn" type="button" style="display:inline;" value="应用">
+</div>
+
+<div id="toggle-header">
+    <h2 class="config-panel"> 顶栏 </h2>
+    <input id="show-header" class="favtag-btn config-btn" type="button" value="显示">
+    <input id="hide-header" class="favtag-btn config-btn" type="button" value="隐藏">
+</div>
+
+<div id="toggle-overlay">
+    <h2 class="config-panel"> 默认显示预览页 </h2>
+    <span class="config-panel">这将在每次打开新的阅读器页面时，自动打开档案预览页。
+    </span>
+    <input id="show-overlay" class="favtag-btn config-btn" type="button" value="启用">
+    <input id="hide-overlay" class="favtag-btn config-btn" type="button" value="禁用">
+</div>
+
+
+<div id="toggle-progress">
+    <h2 class="config-panel"> 进度追踪 </h2>
+    <span class="config-panel">禁用进度追踪将使每次重新打开阅读器时从第一页开始。
+    </span>
+    <input id="track-progress" class="favtag-btn config-btn" type="button" value="启用">
+    <input id="untrack-progress" class="favtag-btn config-btn" type="button" value="禁用">
+</div>
+
+<div id="toggle-infinite-scroll">
+    <h2 class="config-panel"> 无限滚动 </h2>
+    <span class="config-panel">将所有图像垂直显示在同一页中。
+    </span>
+    <input id="infinite-scroll-on" class="favtag-btn config-btn" type="button" value="启用">
+    <input id="infinite-scroll-off" class="favtag-btn config-btn" type="button" value="禁用">
+</div>
+
+[% END %]
+<!-- -->
+[% BLOCK arrows %]
+<div class="sn paginator">
+    <a class="fa fa-angle-double-left page-link" style="font-size: 1.5em;" value="outer-left"></a>
+    <a class="fa fa-angle-left page-link" style="font-size: 1.5em;" value="left"></a>
+
+    <div class="pagecount">
+        <span class="current-page">...</span> /
+        <span class="max-page">...</span>
+    </div>
+
+    <a class="fa fa-angle-right page-link" style="font-size: 1.5em;" value="right"></a>
+    <a class="fa fa-angle-double-right page-link" style="font-size: 1.5em;" value="outer-right"></a>
+</div>
+[% END %]
+<!-- -->
+[% BLOCK pagesel %]
+<div class="absolute-options absolute-left">
+    <a class="fa fa-cog fa-2x" id="toggle-settings-overlay" href="#" title="阅读器设置"></a>
+    <a class="fa fa-question-circle fa-2x" id="toggle-help" href="#" title="帮助"></a>
+</div>
+
+<div class="absolute-options absolute-right">
+    <a class="fa fa-arrow-right fa-2x reading-direction" href="#" title="阅读方向"></a>
+    <a class="fa fa-th fa-2x" id="toggle-archive-overlay" href="#" title="档案预览"></a>
+    <a class="fa fa-compress fa-2x" id="toggle-full-screen" href="#" title="全屏"></a>
+</div>
+[% END %]
+<!-- -->
+[% BLOCK fileinfo %]
+<div class="file-info">
+
+</div>
+[% END %]

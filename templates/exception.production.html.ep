@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<head>
+	<title>LANraragi 服务器错误</title>
+
+	<meta name="viewport" content="width=device-width" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="apple-mobile-web-status-bar-style" content="black" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+
+	<link type="image/png" rel="icon" href="favicon.ico" />
+	<link rel="manifest" href="app.webappmanifest" />
+</head>
+
+<body style='background: none repeat scroll 0% 0% brown; color: white; font-family: sans-serif; text-align: center'>
+
+	<img src='/img/flubbed.gif' />
+	<br />
+	<h2>有些东西在渲染你的页面时出了毛病！</h2>
+	这可能是服务器出了Bug导致的<br />
+	<p>
+		<%= $exception->message %>
+	</p>
+
+	<h3>更多信息将显示在下面：</h3>
+	<pre><%= dumper $snapshot %></pre>
+
+</body>
+
+</html>

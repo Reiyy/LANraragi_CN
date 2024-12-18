@@ -1,0 +1,62 @@
+#!/bin/sh
+
+USER_ID=${LRR_UID}
+GROUP_ID=${LRR_GID}
+FIX_PERMS=${LRR_AUTOFIX_PERMISSIONS:-1}
+
+echo "Starting LANraragi with UID/GID : $USER_ID/$GROUP_ID"
+
+#Update the root user, using the specified uid/gid.
+#This solves permission problems on the content folder if the Docker user sets the same uid as the owner of the folder.
+usermod -o -u $USER_ID root
+groupmod -o -g $GROUP_ID root
+chown root /root/lanraragi
+
+#Crash with an error if content folder doesn't exist
+if [ ! -d "/root/lanraragi/content" ]; then
+  echo "Content folder doesn't exist! Please ensure your Docker mappings are correct."
+  exit 1
+fi
+
+#Ensure database is writable
+chown -R root /root/lanraragi/database
+chmod -R u+rwx /root/lanraragi/database
+
+if [ "$FIX_PERMS" -eq 1 ]; then
+  echo "Fixing permissions, hold on!"
+  #Ensure thumbnail folder is writable
+  chown -R root /root/lanraragi/content/thumb
+  find /root/lanraragi/content/thumb -type f -exec chmod u+rw  {} \;
+  find /root/lanraragi/content/thumb -type d -exec chmod u+rwx {} \;
+
+  # Ensure the rest of the content folder is at least readable
+  find /root/lanraragi/content -name thumb -prune -o -type f -exec chmod u+r  {} \;
+  find /root/lanraragi/content -name thumb -prune -o -type d -exec chmod u+rx {} \;
+else
+    echo "Not touching permissions"
+fi
+
+#Ensure log folder is writable
+mkdir /root/lanraragi/log
+chown -R root /root/lanraragi/log
+chmod u+rwx /root/lanraragi/log
+
+#Ensure temp folder is writable
+mkdir /root/lanraragi/public/temp
+chown -R root /root/lanraragi/public/temp
+chmod u+rwx /root/lanraragi/public/temp
+
+#Remove mojo, minion and shinobu pid files
+rm /root/lanraragi/public/temp/server.pid
+rm /root/lanraragi/public/temp/shinobu.pid
+rm /root/lanraragi/public/temp/shinobu.pid-s6
+rm /root/lanraragi/public/temp/minion.pid
+rm /root/lanraragi/public/temp/minion.pid-s6
+
+# https://redis.io/topics/faq#background-saving-fails-with-a-fork-error-under-linux-even-if-i-have-a-lot-of-free-ram
+OVERCOMMIT=$(cat /proc/sys/vm/overcommit_memory)
+if [ $OVERCOMMIT -eq 0 ]
+then
+        echo "WARNING: overcommit_memory is set to 0! This might lead to background saving errors if your database is too large."
+            echo "Please check https://redis.io/topics/faq#background-saving-fails-with-a-fork-error-under-linux-even-if-i-have-a-lot-of-free-ram for details."
+fi

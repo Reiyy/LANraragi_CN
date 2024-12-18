@@ -1,0 +1,79 @@
+<tr>
+    <td class="option-td">
+        <h2 class="ih"> 启用密码 </h2>
+    </td>
+    <td class="config-td">
+        [% IF enablepass %]
+        <input id="enablepass" name="enablepass" class="fa" type="checkbox" checked> [% ELSE %]
+        <input id="enablepass" name="enablepass" class="fa" type="checkbox"> [% END %]
+        <label for="enablepass">
+            <br>如果启用，除了阅读之外，所有操作都需要密码。
+        </label>
+    </td>
+</tr>
+
+<tr class="passwordfields">
+    <td class="option-td">
+        <h2 class="ih"> 新密码 </h2>
+    </td>
+    <td class="config-td">
+        <input class="stdinput" style="width:100%" maxlength="255" size="20" name="newpassword" type="password">
+    </td>
+</tr>
+
+<tr class="passwordfields">
+    <td class="option-td">
+        <h2 class="ih"> 确认新密码 </h2>
+    </td>
+    <td class="config-td">
+        <input class="stdinput" style="width:100%" maxlength="255" size="20" name="newpassword2" type="password">
+        <br> 只有在你想更改密码时，才编辑以上字段。<br />
+        留空，将继续使用当前密码。
+    </td>
+</tr>
+
+<tr class="passwordfields">
+    <td class="option-td">
+        <h2 class="ih"> 无趣模式 </h2>
+    </td>
+    <td class="config-td">
+        [% IF nofunmode %]
+        <input id="nofunmode" name="nofunmode" class="fa" type="checkbox" checked> [% ELSE %]
+        <input id="nofunmode" name="nofunmode" class="fa" type="checkbox"> [% END %]
+        <label for="nofunmode">
+            <br>启用此模式将需要输入密码才能访问档案库。<br />
+            重新LANraragi后生效。
+        </label>
+    </td>
+</tr>
+
+<tr class="passwordfields">
+    <td class="option-td">
+        <h2 class="ih"> API 密钥 </h2>
+    </td>
+    <td class="config-td">
+        <input id="apikey" class="stdinput" style="width:100%" maxlength="255" size="20" value="[% apikey %]"
+            name="apikey" type="text">
+        <br>如果你想使用客户端API并有一个密码，你需要在这里设置一个密钥。<br />
+        留空将<b>不</b>工作！
+        <br>每次调用受保护的API时，都需要提供<i>Authorization</i>标头并将其设为此密钥。
+    </td>
+</tr>
+
+<tr>
+    <td class="option-td">
+        <h2 class="ih"> 为客户端API启用 CORS </h2>
+    </td>
+    <td class="config-td">
+        [% IF enablecors %]
+        <input id="enablecors" name="enablecors" class="fa" type="checkbox" checked> [% ELSE %]
+        <input id="enablecors" name="enablecors" class="fa" type="checkbox"> [% END %]
+        <label for="enablecors">
+            <br>启用该选项以允许跨域资源共享，使Web浏览器允许其他域
+            调用API。
+            <br>如果你想允许其他基于Web的不同域服务访问API，
+            请启用该选项。
+            <br>如果你不知道这是干嘛用的，就不要打开它！
+        </label>
+    </td>
+</tr>
