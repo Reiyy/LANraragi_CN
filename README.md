@@ -1,23 +1,26 @@
-[<img src="https://img.shields.io/docker/pulls/difegue/lanraragi.svg">](https://hub.docker.com/r/difegue/lanraragi/)
-[<img src="https://img.shields.io/github/downloads/difegue/lanraragi/total.svg">](https://github.com/Difegue/LANraragi/releases)
-[<img src="https://img.shields.io/github/release/difegue/lanraragi.svg?label=latest%20release">](https://github.com/Difegue/LANraragi/releases/latest)
+[<img src="https://img.shields.io/docker/pulls/difegue/lanraragi.svg">](https://hub.docker.com/r/yareiy/lanraragi_cn/)
+[<img src="https://img.shields.io/github/downloads/difegue/lanraragi/total.svg">](https://github.com/Reiyy/LANraragi_CN/releases)
+[<img src="https://img.shields.io/github/release/difegue/lanraragi.svg?label=latest%20release">](https://github.com/Reiyy/LANraragi_CN/releases/latest)
 [<img src="https://img.shields.io/homebrew/v/lanraragi.svg">](https://formulae.brew.sh/formula/lanraragi)
 [<img src="https://img.shields.io/website/https/lrr.tvc-16.science.svg?label=demo%20website&up_message=online">](https://lrr.tvc-16.science/)
-[<img src="https://github.com/Difegue/LANraragi/actions/workflows/push-continuous-integration.yml/badge.svg">](https://github.com/Difegue/LANraragi/actions)
+[<img src="https://github.com/Difegue/LANraragi/actions/workflows/push-continuous-integration.yml/badge.svg">](https://github.com/Reiyy/LANraragi_CN/actions)
 [<img src="https://img.shields.io/discord/612709831744290847">](https://discord.gg/aRQxtbg)
 
 
 <img src="public/favicon.ico" width="128">  
-  
+
 LANraragi_CN
 ===========
 这是一个新的LANraragi简体中文汉化版本。
 基于当前最新LANraragi版本，重新翻译了所有文本，修正了一些翻译错误。
 
-Docker部分与先前的汉化项目保持一致，使用root账户代替koyomi解决群晖nas上面的无法访问挂载文件夹/home/koyomi/lanraragi/content目录的问题，如果你使用Docker安装，将漫画文件夹挂载到/root/lanraragi/content，数据库挂载到/root/lanraragi/database。
+前两位汉化者都不更新了，旧版缺失了一些功能，故自己做了个最新版的。从头重新翻译了所有文本，修正了一些以前的翻译错误，翻译基于我自己的习惯和喜好进行润色，如果有某些地方不准确或有缺漏，欢迎提issues或者提交PR. 不保证更新速度，如果旧版没出什么问题，新版也没什么吸引我的新功能，那可能就不会更新。
 
-（注意！本项目仍处于测试阶段，请记得备份你的数据！）
-Docker用户将镜像切换到 reiyy/lanraragi_cn:latest 即可。
+Docker部分与先前的汉化项目保持一致，使用root账户代替koyomi解决群晖nas上面的无法访问挂载文件夹/home/koyomi/lanraragi/content目录的问题。
+如果你使用Docker安装，将漫画文件夹挂载到/root/lanraragi/content，数据库挂载到/root/lanraragi/database，缩略图文件夹挂载到/root/lanraragi/thumb，插件文件夹挂载到/root/lanraragi/lib/LANraragi/Plugin/Sideloaded。
+
+Docker用户将镜像切换到 yareiy/lanraragi_cn:latest 即可。
+注意！以防万一，请记得备份你的数据！
 
 ===========
 Open source server for archival of comics/manga, running on Mojolicious + Redis.
