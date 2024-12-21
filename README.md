@@ -17,17 +17,22 @@ LANraragi_CN
 前两位汉化者都不更新了，旧版缺失了一些功能，故自己做了个最新版的。从头重新翻译了所有文本，修正了一些以前的翻译错误，翻译基于我自己的习惯和喜好进行润色，如果有某些地方不准确或有缺漏，欢迎提issues或者提交PR. 不保证更新速度，如果旧版没出什么问题，新版也没什么吸引我的新功能，那可能就不会更新。
 
 Docker部分与先前的汉化项目保持一致，使用root账户代替koyomi解决群晖nas上面的无法访问挂载文件夹/home/koyomi/lanraragi/content目录的问题。  
-如果你使用Docker安装，将漫画文件夹挂载到/root/lanraragi/content，数据库挂载到/root/lanraragi/database，缩略图文件夹挂载到/root/lanraragi/thumb，插件文件夹挂载到/root/lanraragi/lib/LANraragi/Plugin/Sideloaded。
+如果你使用Docker安装，  
+将漫画文件夹挂载到/root/lanraragi/content，  
+将数据库挂载到/root/lanraragi/database，  
+将缩略图文件夹挂载到/root/lanraragi/thumb，  
+将插件文件夹挂载到/root/lanraragi/lib/LANraragi/Plugin/Sideloaded。
 
 Docker用户将镜像切换到 yareiy/lanraragi_cn:latest 即可。  
 注意！以防万一，请记得备份你的数据！
 
 将不再内置ETagCN和ETagConverter插件，  
-因为自上游v0.9.2(#980)开始侧载插件有了自己的VOLUME，在Docker中挂载插件文件夹/root/lanraragi/lib/LANraragi/Plugin/Sideloaded后即可在更新时不丢失插件。
+因为自上游v0.9.2(#980)开始侧载插件有了自己的VOLUME。  
+在Docker中挂载插件文件夹/root/lanraragi/lib/LANraragi/Plugin/Sideloaded后即可在更新时不丢失插件。
 
 如有需要，可自行下载并上传插件：  
-[ETagConverter](https://github.com/zhy201810576/ETagConverter)  
-[ETagCN](https://github.com/zhy201810576/ETagCN)
+[zhy201810576/ETagConverter](https://github.com/zhy201810576/ETagConverter)  
+[zhy201810576/ETagCN](https://github.com/zhy201810576/ETagCN)
 
 -------------------------------  
 Open source server for archival of comics/manga, running on Mojolicious + Redis.
