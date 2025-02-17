@@ -24,10 +24,15 @@ chmod -R u+rwx /root/lanraragi/database
 
 if [ "$FIX_PERMS" -eq 1 ]; then
   echo "Fixing permissions, hold on!"
+
   #Ensure thumbnail folder is writable
-  chown -R root /root/lanraragi/content/thumb
-  find /root/lanraragi/content/thumb -type f -exec chmod u+rw  {} \;
-  find /root/lanraragi/content/thumb -type d -exec chmod u+rwx {} \;
+  chown -R root /root/lanraragi/thumb
+  find /root/lanraragi/thumb -type f -exec chmod u+rw  {} \;
+  find /root/lanraragi/thumb -type d -exec chmod u+rwx {} \;
+
+  chown -R root /root/lanraragi/lib/LANraragi/Plugin/Sideloaded
+  chmod u+rwx /root/lanraragi/lib/LANraragi/Plugin/Sideloaded
+  find /root/lanraragi/lib/LANraragi/Plugin/Sideloaded -type f -exec chmod u+rwx {} \;
 
   # Ensure the rest of the content folder is at least readable
   find /root/lanraragi/content -name thumb -prune -o -type f -exec chmod u+r  {} \;
@@ -47,11 +52,21 @@ chown -R root /root/lanraragi/public/temp
 chmod u+rwx /root/lanraragi/public/temp
 
 #Remove mojo, minion and shinobu pid files
-rm /root/lanraragi/public/temp/server.pid
-rm /root/lanraragi/public/temp/shinobu.pid
-rm /root/lanraragi/public/temp/shinobu.pid-s6
-rm /root/lanraragi/public/temp/minion.pid
-rm /root/lanraragi/public/temp/minion.pid-s6
+if [ -f /root/lanraragi/public/temp/server.pid ]; then
+    rm /root/lanraragi/public/temp/server.pid
+fi
+if [ -f /root/lanraragi/public/temp/shinobu.pid ]; then
+    rm /root/lanraragi/public/temp/shinobu.pid
+fi
+if [ -f /root/lanraragi/public/temp/shinobu.pid-s6 ]; then
+    rm /root/lanraragi/public/temp/shinobu.pid-s6
+fi
+if [ -f /root/lanraragi/public/temp/minion.pid ]; then
+    rm /root/lanraragi/public/temp/minion.pid
+fi
+if [ -f /root/lanraragi/public/temp/minion.pid-s6 ]; then
+  rm /root/lanraragi/public/temp/minion.pid-s6
+fi
 
 # https://redis.io/topics/faq#background-saving-fails-with-a-fork-error-under-linux-even-if-i-have-a-lot-of-free-ram
 OVERCOMMIT=$(cat /proc/sys/vm/overcommit_memory)

@@ -1,201 +1,288 @@
-package LANraragi::Plugin::Metadata::Hdoujin;
+package LANraragi::Plugin::Metadata::HDoujin;
 
 use strict;
 use warnings;
 
-#Plugins can freely use all Perl packages already installed on the system
-#Try however to restrain yourself to the ones already installed for LRR (see tools/cpanfile) to avoid extra installations by the end-user.
+# Plugins can freely use all Perl packages already installed on the system
+# Try however to restrain yourself to the ones already installed for LRR (see tools/cpanfile) to avoid extra installations by the end-user.
 use Mojo::JSON qw(from_json);
-use utf8;
-#You can also use the LRR Internal API when fitting.
-use LANraragi::Model::Plugins;
-use LANraragi::Utils::Logging qw(get_plugin_logger);
-use LANraragi::Utils::Archive qw(is_file_in_archive extract_file_from_archive);
 
-#Meta-information about your plugin.
+# You can also use the LRR Internal API when fitting.
+use LANraragi::Model::Plugins;
+use LANraragi::Utils::Archive qw(is_file_in_archive extract_file_from_archive);
+use LANraragi::Utils::Logging qw(get_plugin_logger);
+use LANraragi::Utils::String  qw(trim_url);
+
+# Meta-information about your plugin.
 sub plugin_info {
 
     return (
-        #Standard metadata
-        name        => "Hdoujin",
+        # Standard metadata
+        name        => "HDoujin",
         type        => "metadata",
         namespace   => "Hdoujinplugin",
-        author      => "Pao",
-        version     => "0.5",
-        description => "从 HDoujin 下载器的 json 或 txt 文件中收集嵌入到你的档案中的元数据。",
-        icon =>
+        author      => "Pao, Squidy",
+        version     => "0.7",
+        description => "Collects metadata embedded into your archives by HDoujin Downloader's JSON or TXT files.",
+        icon        =>
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABmJLR0QA/wD/AP+gvaeTAAAACXBI\nWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wYDFB0m9797jwAAAB1pVFh0Q29tbWVudAAAAAAAQ3Jl\nYXRlZCB3aXRoIEdJTVBkLmUHAAAEbklEQVQ4y1WUPW/TUBSGn3uvHdv5cBqSOrQJgQ4ghqhCAgQM\nIIRAjF2Y2JhA/Q0g8R9YmJAqNoZKTAwMSAwdQEQUypeQEBEkTdtUbdzYiW1sM1RY4m5Hunp1znmf\n94jnz5+nAGmakiQJu7u7KKWwbRspJWma0m63+fHjB9PpFM/z6Ha7FAoFDMNga2uLx48fkyQJ29vb\nyCRJSNMUz/PY2dnBtm0qlQpKKZIkIQgCer0eW1tbDIdDJpMJc3NzuK5Lt9tF13WWl5dJkoRyuYyU\nUrK3t0ccx9TrdQzD4F/HSilM08Q0TWzbplqtUqvVKBaLKKVoNpt8/vyZKIq4fv064/EY2ev1KBQK\n2LadCQkhEEJkteu6+L6P7/tMJhOm0ylKKarVKjdu3GA6nXL+/HmSJEHWajV0Xf9P7N8TQhDHMWEY\nIoRgOBzieR4At2/f5uTJk0RRRLFYZHZ2liNHjqBFUcRoNKJarSKlRAiRmfPr1y/SNMVxHI4dO8aF\nCxfI5/O4rotSirdv33L16lV+//7Nly9fUEqh5XI5dF0nTdPMaSEEtm3TaDSwLAvLstB1nd3dXUql\nEqZpYlkW6+vrdLtdHjx4wPb2NmEYHgpalkUQBBwcHLC2tsbx48cpFos4jkMQBIRhyGQyYTgcsrGx\nQavVot1uc+LECcbjMcPhkFKpRC6XQ0vTlDAMieOYQqGA4zhcu3YNwzDQdR3DMA4/ahpCCPL5fEbC\nvXv3WFlZ4c+fP7TbbZaWlpBRFGXjpmnK/Pw8QRAwnU6RUqJpGp7nMRqNcF0XwzCQUqKUolwus7y8\njO/7lMtlFhcX0YQQeJ6XMXfq1Cn29/epVCrouk4QBNi2TalUIoqizLg0TQEYjUbU63VmZmYOsdE0\nDd/3s5HH4zG6rtNsNrEsi0qlQqFQYH19nVevXjEej/8Tm0wmlMtlhBAMBgOkaZo0Gg329vbY2dkh\nCIJsZ0oplFK8efOGp0+fcvHiRfL5PAAHBweEYcj8/HxGydevX5FxHDMajajVanz69Ik4jkmSBF3X\n0TSNzc1N7t69S6vV4vXr10gp8X2f4XBIpVLJghDHMRsbG2jT6TRLxuLiIr1eDwBN09A0jYcPHyKE\n4OjRo8RxTBRF9Pt95ubmMud93+f79+80m03k/v4+UspDKDWNRqPBu3fvSNOUtbU16vU6ly5dwnEc\ncrkcrutimib5fD4zxzRNVldXWVpaQqysrKSdTofLly8zmUwoFAoIIfjXuW3bnD17NkuJlBLHcdA0\nDYAgCHj27BmO47C6uopM05RyucyLFy/QNA3XdRFCYBgGQRCwubnJhw8fGAwGANRqNTRNI0kSXr58\nyc2bN6nX64RhyP379xFPnjxJlVJIKTl37hydTocoiuh0OszOzmJZFv1+n8FgwJ07d7hy5Qrj8ZiP\nHz/S7/c5ffo0CwsL9Ho9ZmZmEI8ePUoNwyBJEs6cOcPCwgLfvn3j/fv35PN5bNtGKZUdjp8/f3Lr\n1q3svLVaLTzPI4oiLMviL7opJdyaltNwAAAAAElFTkSuQmCC",
         parameters => []
     );
 
 }
 
-#Mandatory function to be implemented by your plugin
+# Mandatory function to be implemented by your plugin
 sub get_tags {
 
     shift;
+
     my $lrr_info = shift;    # Global info hash
 
-    my $logger = get_plugin_logger();
-    my $file   = $lrr_info->{file_path};
+    my $logger            = get_plugin_logger();
+    my $archive_file_path = $lrr_info->{file_path};
 
-    my $path_in_archive = is_file_in_archive( $file, "info.json" );
+    my $path_in_archive = is_file_in_archive( $archive_file_path, "info.json" );
+
     if ($path_in_archive) {
+        return get_tags_from_hdoujin_json_file( $archive_file_path, $path_in_archive );
+    }
 
-        #Extract info.json
-        my $filepath = extract_file_from_archive( $file, $path_in_archive );
+    $path_in_archive = is_file_in_archive( $archive_file_path, "info.txt" );
 
-        #Open it
-        my $stringjson = "";
+    if ($path_in_archive) {
+        return get_tags_from_hdoujin_txt_file( $archive_file_path, $path_in_archive );
+    }
 
-        open( my $fh, '<:encoding(UTF-8)', $filepath )
-          or return ( error => "Could not open $filepath!" );
+    die "No HDoujin metadata files found in this archive!\n";
 
-        while ( my $row = <$fh> ) {
-            chomp $row;
-            $stringjson .= $row;
+}
+
+sub get_tags_from_hdoujin_txt_file {
+
+    my $archive_file_path = $_[0];
+    my $path_in_archive   = $_[1];
+
+    my $logger = get_plugin_logger();
+
+    my $file_path = extract_file_from_archive( $archive_file_path, $path_in_archive );
+
+    open( my $file_handle, '<:encoding(UTF-8)', $file_path )
+      or die "Could not open $file_path!\n";
+
+    my $title   = "";
+    my $tags    = "";
+    my $summary = "";
+
+    while ( my $line = <$file_handle> ) {
+
+        if ( $line =~ m/(?i)^(artist|author|circle|characters?|description|language|parody|series|tags|title|url): (.*)/ ) {
+
+            my $namespace = normalize_namespace($1);
+            my $value     = $2;
+
+            $value =~ s/^\s+|\s+$//g;
+
+            if ( $value eq "" ) {
+                next;
+            }
+
+            if ( lc($namespace) eq "source" ) {
+                $value = trim_url($value);
+            }
+
+            if ( lc($namespace) eq "description" ) {
+                $summary = $value;
+            } elsif ( lc($namespace) eq "title" ) {
+                $title = $value;
+            } else {
+                $tags = append_tags( $tags, $namespace, $value );
+            }
+
         }
 
-        #Use Mojo::JSON to decode the string into a hash
-        my $hashjson = from_json $stringjson;
+    }
 
-        $logger->debug("Found and loaded the following JSON: $stringjson");
+    unlink $file_path;
 
-        #Parse it
-        my $tags = tags_from_Hdoujin_json($hashjson);
+    if ( $tags eq "" ) {
+        die "No tags were found in info.txt!\n";
+    }
 
-        #Delete it
-        unlink $filepath;
+    $logger->info("Sending the following tags to LRR: $tags");
 
-        #Return tags
-        $logger->info("正在将以下标签发送到LRR：$tags");
-        return ( tags => $tags );
+    return ( title => $title, tags => remove_duplicates($tags), summary => $summary );
 
-    } else {
-        $path_in_archive = is_file_in_archive( $file, "info.txt" );
-        if ($path_in_archive) {
+}
 
-            # Extract info.txt
-            my $filepath = extract_file_from_archive( $file, $path_in_archive );
+sub get_tags_from_hdoujin_json_file {
 
-            # Open it
-            open( my $fh, '<:encoding(UTF-8)', $filepath )
-              or return ( error => "Could not open $filepath!" );
+    my $archive_file_path = $_[0];
+    my $path_in_archive   = $_[1];
 
-            while ( my $line = <$fh> ) {
+    my $logger = get_plugin_logger();
 
-                # Check if the line starts with TAGS:
-                if ( $line =~ m/TAGS: (.*)/ ) {
-                    return ( tags => $1 );
+    my $file_path = extract_file_from_archive( $archive_file_path, $path_in_archive );
+    my $json_str  = "";
+
+    open( my $file_handle, '<:encoding(UTF-8)', $file_path )
+      or die "Could not open $file_path!\n";
+
+    while ( my $row = <$file_handle> ) {
+
+        chomp $row;
+        $json_str .= $row;
+
+    }
+
+    my $json_hash = from_json $json_str;
+
+    $logger->debug("Found and loaded the following JSON: $json_str");
+
+    # Note that fields may be encapsulated in an outer "manga_info" object if the user has enabled this.
+    # Each field can contain either a single tag or an array of tags.
+
+    if ( exists $json_hash->{"manga_info"} ) {
+        $json_hash = $json_hash->{"manga_info"};
+    }
+
+    my $title   = $json_hash->{"title"};
+    my $tags    = get_tags_from_hdoujin_json_file_hash($json_hash);
+    my $summary = $json_hash->{"description"};
+
+    unlink $file_path;
+
+    if ( $tags eq "" ) {
+        die "No tags were found in info.json!\n";
+    }
+
+    $logger->info("Sending the following tags to LRR: $tags");
+
+    return ( title => $title, tags => remove_duplicates($tags), summary => $summary );
+
+}
+
+sub get_tags_from_hdoujin_json_file_hash {
+
+    my $json_obj = $_[0];
+    my $tags     = "";
+
+    my $logger = get_plugin_logger();
+
+    my @filtered_keys = grep { /(?i)^(?:artist|author|circle|characters?|language|parody|series|tags|url)/ } keys(%$json_obj);
+
+    foreach my $key (@filtered_keys) {
+
+        my $namespace = normalize_namespace($key);
+        my $values    = $json_obj->{$key};
+
+        if ( lc($namespace) eq "source" ) {
+            $values = trim_url($values);
+        }
+
+        if ( ref($values) eq 'ARRAY' ) {
+
+            # We have an array of values (e.g. author, artist, language, and character fields).
+
+            foreach my $tag (@$values) {
+                $tags = append_tags( $tags, $namespace, $tag );
+            }
+
+        } elsif ( ref($values) eq 'HASH' ) {
+
+            # We have a map of keyed values (e.g. tags with namespace arrays enabled).
+
+            foreach my $nestedNamespace ( keys(%$values) ) {
+
+                my $nestedValues = $values->{$nestedNamespace};
+
+                foreach my $tag (@$nestedValues) {
+                    $tags = append_tags( $tags, normalize_namespace($nestedNamespace), $tag );
                 }
-            }
-            return ( error => "No tags were found in info.txt!" );
-
-        } else {
-            return ( error => "No Hdoujin info.json or info.txt file found in this archive!" );
-        }
-    }
-}
-
-#tags_from_Hdoujin_json(decodedjson)
-#Goes through the JSON hash obtained from an info.json file and return the contained tags.
-sub tags_from_Hdoujin_json {
-
-    my $hash   = $_[0];
-    my $return = "";
-
-    #HDoujin jsons are composed of a main manga_info object, containing fields for every metadata.
-    #Those fields can contain either a single tag or an array of tags.
-
-    my $tags = $hash->{"manga_info"};
-
-    #Take every key in the manga_info hash, except for title which we're already processing
-
-    my @filtered_keys = grep { $_ ne "tags" and $_ ne "title" } keys(%$tags);
-
-    foreach my $namespace (@filtered_keys) {
-
-        my $members = $tags->{$namespace};
-
-        if ( ref($members) eq 'ARRAY' ) {
-
-            foreach my $tag (@$members) {
-
-                $return .= ", " unless $return eq "";
-                $return .= $namespace . ":" . $tag unless $members eq "";
 
             }
 
         } else {
 
-            $return .= ", " unless $return eq "";
-            $return .= $namespace . ":" . $members unless $members eq "";
+            # We have a basic string value (e.g. series).
+
+            $tags = append_tags( $tags, $namespace, $values );
 
         }
 
     }
 
-    my $tagsobj = $hash->{"manga_info"}->{"tags"};
-
-    if ( ref($tagsobj) eq 'HASH' ) {
-
-        return $return . "," . tags_from_wRespect($hash);
-
-    } else {
-
-        return $return . "," . tags_from_noRespect($hash);
-
-    }
+    return $tags;
 
 }
 
-sub tags_from_wRespect {
+sub append_tags {
 
-    my $hash   = $_[0];
-    my $return = "";
-    my $tags   = $hash->{"manga_info"}->{"tags"};
+    my $tags      = $_[0];
+    my $namespace = $_[1];
+    my $append    = $_[2];
 
-    foreach my $namespace ( keys(%$tags) ) {
+    my @split_tags = split( /,/, $append );
 
-        my $members = $tags->{$namespace};
-        foreach my $tag (@$members) {
+    for my $tag (@split_tags) {
 
-            $return .= ", " unless $return eq "";
-            $return .= $namespace . ":" . $tag;
+        $tag =~ s/^\s+|\s+$//g;
 
+        if ( $tag eq "" ) {
+            next;
         }
+
+        if ( $namespace ne "" ) {
+            $tag = lc($namespace) . ":" . $tag;
+        }
+
+        $tags .= ", " unless $tags eq "";
+        $tags .= $tag;
+
     }
 
-    return $return;
+    return $tags;
 
 }
 
-sub tags_from_noRespect {
+sub remove_duplicates {
 
-    my $hash   = $_[0];
-    my $return = "";
-    my $tags   = $hash->{"manga_info"};
+    # The tags list may contain tags duplicated in fields, so it's likely to encounter duplicates.
 
-    my @filtered_keys = grep { /^tags/ } keys(%$tags);
+    my $tags       = $_[0];
+    my @split_tags = split( /,/, $tags );
 
-    foreach my $namespace (@filtered_keys) {
+    my %seenTags;
+    my @uniqueTags;
 
-        my $members = $tags->{$namespace};
+    for my $tag (@split_tags) {
 
-        if ( ref($members) eq 'ARRAY' ) {
+        $tag =~ s/^\s+|\s+$//g;
 
-            foreach my $tag (@$members) {
+        next if $seenTags{ lc($tag) }++;
 
-                $return .= ", " unless $return eq "";
-                $return .= $namespace . ":" . $tag;
-
-            }
-
-        }
+        push( @uniqueTags, $tag );
 
     }
 
-    return $return;
+    return join( ", ", @uniqueTags );
+
+}
+
+sub normalize_namespace {
+
+    my $namespace = lc( $_[0] );
+
+    if ( $namespace eq "characters" ) {
+        return "character";
+    } elsif ( $namespace eq "misc" ) {
+        return "other";
+    } elsif ( $namespace eq "tags" ) {
+        return "";
+    } elsif ( $namespace eq "url" ) {
+        return "source";
+    }
+
+    return $namespace;
 
 }
 

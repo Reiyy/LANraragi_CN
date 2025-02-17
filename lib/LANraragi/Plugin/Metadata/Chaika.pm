@@ -19,7 +19,7 @@ sub plugin_info {
         type        => "metadata",
         namespace   => "trabant",
         author      => "Difegue",
-        version     => "2.3.1",
+        version     => "2.4",
         description =>
           "在 chaika.moe 上搜索与你的档案匹配的标签。这将优先尝试使用缩略图，如果失败则使用默认文本搜索。",
         icon =>
@@ -66,14 +66,18 @@ sub get_tags {
         # Try text search if it fails
         if ( $newtags eq "" ) {
             $logger->info("没有结果，回退到文本搜索。");
-            ( $newtags, $newtitle ) =
-              search_for_archive( $lrr_info->{archive_title}, $lrr_info->{existing_tags}, $addextra, $addother, $addsource, $jpntitle );
+            ( $newtags, $newtitle ) = search_for_archive(
+                $lrr_info->{archive_title},
+                $lrr_info->{existing_tags},
+                $addextra, $addother, $addsource, $jpntitle
+            );
         }
     }
 
     if ( $newtags eq "" ) {
-        $logger->info("未找到匹配的 Chaika 档案！");
-        return ( error => "No matching Chaika Archive Found!" );
+        my $message = "未找到匹配的 Chaika 档案！";
+        $logger->info($message);
+        die "${message}\n";
     } else {
         $logger->info("正在将以下标签发送到LRR：$newtags");
 

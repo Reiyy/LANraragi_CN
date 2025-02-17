@@ -98,8 +98,8 @@ Index.initializeAll = function () {
     Server.callAPI("/api/info", "GET", null, "获取基本服务器信息出错！",
         (data) => {
             Index.serverVersion = data.version;
-            Index.debugMode = data.debug_mode === "1";
-            Index.isProgressLocal = data.server_tracks_progress !== "1";
+            Index.debugMode = !!data.debug_mode;
+            Index.isProgressLocal = !data.server_tracks_progress;
             Index.pageSize = data.archives_per_page;
 
             // Check version if not in debug mode
@@ -109,7 +109,7 @@ Index.initializeAll = function () {
             } else {
                 LRR.toast({
                     heading: "<i class=\"fas fa-bug\"></i> 你正在以调试模式运行！",
-                    text: "可以在 <a href=\"./debug\"> 此处</a>查看高级服务器统计信息。</a>",
+                    text: `可以在 <a href="${new LRR.apiURL("/debug")}">此处</a>查看高级服务器统计信息。</a>`,
                     icon: "warning",
                 });
             }
@@ -266,14 +266,6 @@ Index.updateTableControls = function (currentSort, currentOrder, totalPages, cur
     $("#namespace-sortby").val(currentSort);
     $("#order-sortby")[0].classList.remove("fa-sort-alpha-down", "fa-sort-alpha-up");
     $("#order-sortby")[0].classList.add(currentOrder === "asc" ? "fa-sort-alpha-down" : "fa-sort-alpha-up");
-    
-    if ($("#order-sortby")[0].classList.contains("fa-sort-alpha-down")) {
-        $("#order-sortby").text(" 升序");
-        $("#order-sortby").attr("title", "排列顺序按照选择的排序方式升序排列");
-    } else if ($("#order-sortby")[0].classList.contains("fa-sort-alpha-up")) {
-        $("#order-sortby").text(" 降序");
-        $("#order-sortby").attr("title", "排列顺序按照选择的排序方式降序排列");
-    }
 
     if (localStorage.indexViewMode === "1") {
         $(".thumbnail-options").show();
@@ -534,6 +526,55 @@ Index.loadContextMenuCategories = (catList, id) => Server.callAPI(`/api/archives
 );
 
 /**
+ * Build rating options for contextMenu and select the one for the current ID.
+ * @param {*} id The ID of the archive to check
+ * @returns Ratings
+ */
+Index.loadContextMenuRatings = (id) => Server.callAPI(`/api/archives/${id}/metadata`, "GET", null, `查找 ${id} 的元数据时出错！`,
+    (data) => {
+        const items = {};
+        const ratings = [{
+            name: "移除评级"
+        }, {
+            name: "⭐",
+        }, {
+            name: "⭐⭐",
+        }, {
+            name: "⭐⭐⭐",
+        }, {
+            name: "⭐⭐⭐⭐",
+        }, {
+            name: "⭐⭐⭐⭐⭐",
+        }];
+        const tags = LRR.splitTagsByNamespace(data.tags);
+        const hasRating = Object.keys(tags).some(x => x === "rating");
+        const ratingValue = hasRating ? tags["rating"] : [0];
+
+        for (let i = 0; i < ratings.length; i++) {
+            items[i] = ratings[i];
+            items[i].type = "checkbox";
+
+            if (items[i].name === ratingValue[0]) { items[i].selected = true; }
+            items[i].events = {
+                click() {
+                    if(i === 0) delete tags["rating"];
+                    else tags["rating"] = [ratings[i].name];
+
+                    Server.updateTagsFromArchive(id, Object.entries(tags).map(([namespace, tag]) => LRR.buildNamespacedTag(namespace, tag)));
+
+                    // Update the rating info without reload but have to refresh everything.
+                    IndexTable.dataTable.ajax.reload();
+                    Index.updateCarousel();
+                    $(this).parents("ul.context-menu-list").find("input[type='checkbox']").toArray().filter((x) => x !== this).forEach(x => x.checked = false);
+                },
+            };
+        }
+
+        return items;
+    },
+);
+
+/**
  * Handle context menu clicks.
  * @param {*} option The clicked option
  * @param {*} id The Archive ID
@@ -542,7 +583,7 @@ Index.loadContextMenuCategories = (catList, id) => Server.callAPI(`/api/archives
 Index.handleContextMenu = function (option, id) {
     switch (option) {
     case "edit":
-        LRR.openInNewTab(`./edit?id=${id}`);
+        LRR.openInNewTab(new LRR.apiURL(`/edit?id=${id}`));
         break;
     case "delete":
         LRR.showPopUp({
@@ -561,10 +602,10 @@ Index.handleContextMenu = function (option, id) {
         });
         break;
     case "read":
-        LRR.openInNewTab(`./reader?id=${id}`);
+        LRR.openInNewTab(new LRR.apiURL(`/reader?id=${id}`));
         break;
     case "download":
-        LRR.openInNewTab(`./api/archives/${id}/download`);
+        LRR.openInNewTab(new LRR.apiURL(`/api/archives/${id}/download`));
         break;
     default:
         break;
@@ -625,7 +666,16 @@ Index.loadCategories = function () {
             // Pinned categories are shown at the beginning
             data.sort((b, a) => b.name.localeCompare(a.name));
             data.sort((a, b) => b.pinned - a.pinned);
-            let html = "";
+            // Queue some hardcoded categories at the beginning - those are special-cased in the DataTables variant of the search endpoint. 
+            let html = `<div style='display:inline-block'>
+                            <input class='favtag-btn ${(("NEW_ONLY" === Index.selectedCategory) ? "toggled" : "")}' 
+                            type='button' id='NEW_ONLY' value='🆕 仅新档案' 
+                            onclick='Index.toggleCategory(this)' title='点击此处，将仅显示新档案。'/>
+                        </div><div style='display:inline-block'>
+                            <input class='favtag-btn ${(("UNTAGGED_ONLY" === Index.selectedCategory) ? "toggled" : "")}' 
+                            type='button' id='UNTAGGED_ONLY' value='🏷️ 仅无标签' 
+                            onclick='Index.toggleCategory(this)' title='点击此处，将仅显示无标签档案。'/>
+                        </div>`;
 
             const iteration = (data.length > 10 ? 10 : data.length);
 
@@ -690,7 +740,7 @@ Index.migrateProgress = function () {
         localProgressKeys.forEach((id) => {
             const progress = localStorage.getItem(`${id}-reader`);
 
-            promises.push(fetch(`api/archives/${id}/metadata`, { method: "GET" })
+            promises.push(fetch(new LRR.apiURL(`api/archives/${id}/metadata`), { method: "GET" })
                 .then((response) => response.json())
                 .then((data) => {
                     // Don't migrate if the server progress is already further

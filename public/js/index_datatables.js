@@ -61,7 +61,7 @@ IndexTable.initializeAll = function () {
         dom: "<\"top\"ip>rt<\"bottom\"p><\"clear\">",
         language: {
             info: "显示 _START_ 到 _END_ 共 _TOTAL_ 作品。",
-            infoEmpty: "<h1><br/><i class=\"fas fa-4x fa-toilet-paper-slash\"></i><br/><br/>没有档案可供显示！ 尝试 <a href=\"upload\">上传一些</a>？</h1><br/>",
+            infoEmpty: `<h1><br/><i class=\"fas fa-4x fa-toilet-paper-slash\"></i><br/><br/>没有档案可供显示！ 尝试 <a href="${new LRR.apiURL("/upload")}">上传一些</a>？</h1><br/>`,
             processing: "<div id=\"progress\" class=\"indeterminate\"\"><div class=\"bar-container\"><div class=\"bar\" style=\" width: 80%; \"></div></div></div>",
         },
         preDrawCallback: IndexTable.initializeThumbView, // callbacks for thumbnail view
@@ -157,12 +157,15 @@ IndexTable.renderColumn = function (namespace, type, data) {
  */
 IndexTable.renderTitle = function (data, type) {
     if (type === "display") {
+        // For compact mode, the thumbnail API call enforces no_fallback=true in order to queue Minion jobs for missing thumbnails.
+        // (Since compact mode is the "base", it's always loaded first even if you're in table mode)
         return `${LRR.buildProgressDiv(data)} 
-                <a class="context-menu" id="${data.arcid}" onmouseover="IndexTable.buildImageTooltip(this)" href="reader?id=${data.arcid}"> 
+                <a class="context-menu" id="${data.arcid}" onmouseover="IndexTable.buildImageTooltip(this)" href="${new LRR.apiURL(`/reader?id=${data.arcid}`)}"> 
                     ${LRR.encodeHTML(data.title)}
                 </a>
                 <div class="caption" style="display: none;">
-                    <img style="height:300px" src="./api/archives/${data.arcid}/thumbnail" onerror="this.src='./img/noThumb.png'">
+                    <img style="height:300px" src="${new LRR.apiURL(`/api/archives/${data.arcid}/thumbnail?no_fallback=true`)}" 
+                         onerror="this.src='${new LRR.apiURL('/img/noThumb.png')}'">
                 </div>`;
     }
 

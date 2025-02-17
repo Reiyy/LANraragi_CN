@@ -1,8 +1,8 @@
 {
     "name": "lanraragi",
-    "version": "0.9.22",
-    "version_name": "说谎（Adam F 混音）",
-    "description": "我一世英名恐怕要毁在日本文化的影响下了！",
+    "version": "0.9.31",
+    "version_name": "Earthlings On Fire (January 1997 pre-show)",
+    "description": "I'm under Japanese influence and my honor's at stake!",
     "scripts": {
         "test": "prove -r -l -v tests/",
         "lanraragi-installer": "perl ./tools/install.pl",

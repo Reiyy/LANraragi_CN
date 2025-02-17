@@ -74,21 +74,21 @@ sub delete_tankoubon {
     }
 }
 
-sub update_archive_list {
+sub update_tankoubon {
 
     my $self   = shift;
     my $tankid = $self->stash('id');
     my $data   = $self->req->json;
 
-    my ( $result, $err ) = LANraragi::Model::Tankoubon::update_archive_list( $tankid, $data );
+    my ( $result, $err ) = LANraragi::Model::Tankoubon::update_tankoubon( $tankid, $data );
 
     if ($result) {
         my %tankoubon      = LANraragi::Model::Tankoubon::get_tankoubon($tankid);
         my $successMessage = "已更新单行本 \"$tankoubon{name}\" 中的档案!";
 
-        render_api_response( $self, "update_archive_list", undef, $successMessage );
+        render_api_response( $self, "update_tankoubon", undef, $successMessage );
     } else {
-        render_api_response( $self, "update_archive_list", $err );
+        render_api_response( $self, "update_tankoubon", $err );
     }
 }
 

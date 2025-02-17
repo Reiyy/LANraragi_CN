@@ -40,9 +40,9 @@ Reader.initializeAll = function () {
     $(document).on("click.toggle-settings-overlay", "#toggle-settings-overlay", Reader.toggleSettingsOverlay);
     $(document).on("click.toggle-help", "#toggle-help", Reader.toggleHelp);
     $(document).on("click.regenerate-archive-cache", "#regenerate-cache", () => {
-        window.location.href = `./reader?id=${Reader.id}&force_reload`;
+        window.location.href = new LRR.apiURL(`/reader?id=${Reader.id}&force_reload`);
     });
-    $(document).on("click.edit-metadata", "#edit-archive", () => LRR.openInNewTab(`./edit?id=${Reader.id}`));
+    $(document).on("click.edit-metadata", "#edit-archive", () => LRR.openInNewTab(new LRR.apiURL(`/edit?id=${Reader.id}`)));
     $(document).on("click.delete-archive", "#delete-archive", () => {
         LRR.closeOverlay();
         LRR.showPopUp({
@@ -63,9 +63,10 @@ Reader.initializeAll = function () {
     $(document).on("click.add-category", "#add-category", () => {
         if ($("#category").val() === "" || $(`#archive-categories a[data-id="${$("#category").val()}"]`).length !== 0) { return; }
         Server.addArchiveToCategory(Reader.id, $("#category").val());
-
+        let url = new LRR.apiURL(`/?c=${$("#category").val()}`);
+        
         const html = `<div class="gt" style="font-size:14px; padding:4px">
-            <a href="/?c=${$("#category").val()}">
+            <a href="${url}">
             <span class="label">${$("#category option:selected").text()}</span>
             <a href="#" class="remove-category" data-id="${$("#category").val()}"
                 style="margin-left:4px; margin-right:2px">×</a>
@@ -191,7 +192,7 @@ Reader.loadImages = function () {
         },
     ).finally(() => {
         if (Reader.pages === undefined) {
-            $("#img").attr("src", "img/flubbed.gif");
+            $("#img").attr("src", new LRR.apiURL("/img/flubbed.gif").toString());
             $("#display").append("<h2>我在尝试打开档案时搞砸了。</h2>");
         }
     });
@@ -319,7 +320,7 @@ Reader.handleShortcuts = function (e) {
         if ($(".page-overlay").is(":visible")) { break; }
         if (e.originalEvent.getModifierState("Shift") && (window.scrollY) === 0) {
             (Reader.mangaMode) ? Reader.changePage(1) : Reader.changePage(-1);
-        } else if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+        } else if (($(window).height() + $(window).scrollTop()) >= LRR.getDocHeight()) {
             (Reader.mangaMode) ? Reader.changePage(-1) : Reader.changePage(1);
         }
         // spacebar is always forward regardless of reading direction, so it needs to be flipped
@@ -353,7 +354,7 @@ Reader.handleShortcuts = function (e) {
         break;
     case 82: // r
         if (e.ctrlKey || e.shiftKey || e.metaKey) { break; }
-        document.location.href = "/random";
+        document.location.href = new LRR.apiURL("/random");
         break;
     default:
         break;
@@ -717,7 +718,7 @@ Reader.initializeArchiveOverlay = function () {
         const page = index + 1;
 
         const thumbCss = (localStorage.cropthumbs === "true") ? "id3" : "id3 nocrop";
-        const thumbnailUrl = `./api/archives/${Reader.id}/thumbnail?page=${page}`;
+        const thumbnailUrl = new LRR.apiURL(`/api/archives/${Reader.id}/thumbnail?page=${page}`);
         const thumbnail = `
             <div class='${thumbCss} quick-thumbnail' page='${index}' style='display: inline-block; cursor: pointer'>
                 <span class='page-number'>页面 ${page}</span>
@@ -731,21 +732,26 @@ Reader.initializeArchiveOverlay = function () {
 
     // Queue a single minion job for thumbnails and check on its progress regularly
     const thumbProgress = function (notes) {
-        if (notes.progress === undefined) { return; }
-        for (let index = 0; index < notes.progress; ++index) {
-            const page = index + 1;
-            // If the spinner is still visible, update the thumbnail
-            if ($(`#${index}_spinner`).attr("loaded") !== "true") {
-                // Set image source to the thumbnail
-                const thumbnailUrl = `./api/archives/${Reader.id}/thumbnail?page=${page}&cachebust=${Date.now()}`;
-                $(`#${index}_thumb`).attr("src", thumbnailUrl);
-                $(`#${index}_spinner`).attr("loaded", true);
-                $(`#${index}_spinner`).hide();
+        if (notes.total_pages === undefined) { return; }
+
+        // Look at all the numbered keys in notes, aka notes.1, notes.2..
+        for (let i = 1; i <= notes.total_pages; i++) {
+
+            if (notes.hasOwnProperty(i) && notes[i] === "processed") {
+                const index = i - 1;
+                // If the spinner is still visible, update the thumbnail
+                if ($(`#${index}_spinner`).attr("loaded") !== "true") {
+                    // Set image source to the thumbnail
+                    const thumbnailUrl = new LRR.apiURL(`/api/archives/${Reader.id}/thumbnail?page=${i}&cachebust=${Date.now()}`);
+                    $(`#${index}_thumb`).attr("src", thumbnailUrl);
+                    $(`#${index}_spinner`).attr("loaded", true);
+                    $(`#${index}_spinner`).hide();
+                }
             }
         }
     };
 
-    fetch(`/api/archives/${Reader.id}/files/thumbnails`, { method: "POST" })
+    fetch(new LRR.apiURL(`/api/archives/${Reader.id}/files/thumbnails`), { method: "POST" })
         .then((response) => {
             if (response.status === 200) {
                 // Thumbnails are already generated, there's nothing to do. Very nice!

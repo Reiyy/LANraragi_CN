@@ -23,7 +23,7 @@ sub plugin_info {
         type        => "metadata",
         namespace   => "hitomiplugin",
         author      => "doublewelp",
-        version     => "0.2",
+        version     => "0.3",
         description => "在 Hitomi.la 上搜索与你的档案匹配的标签。 
           <br>支持从格式为 \"{Id} Title\" 的文件中读取 ID（花括号可选）
 		  <br><i class='fa fa-exclamation-circle'></i> 如果有，此插件将使用档案的 source: 标签（例如：source:https://hitomi.la/XXXXX/XXXXX）。",
@@ -62,19 +62,12 @@ sub get_tags {
     }
 
     # Did we detect a Hitomi gallery?
-    if ( defined $galleryID ) {
-        $logger->debug("Detected Hitomi gallery id is $galleryID");
-    } else {
-        $logger->info("No matching Hitomi Gallery Found!");
-        return ( error => "No matching Hitomi Gallery Found!" );
+    if ( !$galleryID ) {
+        my $message = "No matching Hitomi Gallery Found!";
+        $logger->info($message);
+        die "${message}\n";
     }
-
-    #If no tokens were found, return a hash containing an error message.
-    #LRR will display that error to the client.
-    if ( $galleryID eq "" ) {
-        $logger->info("No matching Hitomi Gallery Found!");
-        return ( error => "No matching Hitomi Gallery Found!" );
-    }
+    $logger->debug("Detected Hitomi gallery id is $galleryID");
 
     my %hashdata = get_tags_from_Hitomi($galleryID);
 
@@ -91,7 +84,7 @@ sub get_tags {
 sub get_gallery_id_from_title {
 
     my $file = shift;
-    my ( $title, $filepath, $suffix ) = fileparse( $file, qr/\.[^.]*/ ); 
+    my ( $title, $filepath, $suffix ) = fileparse( $file, qr/\.[^.]*/ );
 
     my $logger = get_plugin_logger();
 
@@ -222,9 +215,9 @@ sub get_tags_from_Hitomi {
     my $logger = get_plugin_logger();
 
     my $json = get_js_from_hitomi($gID);
-    $logger->debug("Got fully formed JS from Hitomi");
 
     if ($json) {
+        $logger->debug("Got fully formed JS from Hitomi");
         my @tags = get_tags_from_taglist($json);
         push( @tags, "source:https://hitomi.la/galleries/$gID.html" ) if ( @tags > 0 );
         $hashdata{tags}  = join( ', ', @tags );

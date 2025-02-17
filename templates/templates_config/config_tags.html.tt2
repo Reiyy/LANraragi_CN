@@ -1,43 +1,42 @@
 <tr>
     <td class="option-td">
-        <h2 class="ih"> 缩略图目录 </h2>
+        <h2 class="ih"> [% c.lh("Thumbnail Directory") %] </h2>
     </td>
     <td class="config-td">
         <input class="stdinput" style="width:100%" maxlength="255" size="20" value="[% thumbdir %]" name="thumbdir"
             type="text" [% IF forcedthumbdir %] disabled title="此配置项由环境变量强制执行。" [%
             END %]>
-        <br> 存储档案缩略图的目录。如果该目录不存在，会自动创建它。
-        <br>确保运行LANraragi的系统用户具有该目录的读写权限。<br>
+        <br> [% c.lh("Directory where the archive thumbnails will be located. It will be created if it doesn't exist.") %]
+        <br>[% c.lh("Make sure the OS user running LANraragi has read/write access to this directory.") %] <br>
     </td>
 </tr>
 
 <tr>
     <td class="option-td">
-        <h2 class="ih"> 使用高质量页面缩略图 </h2>
+        <h2 class="ih"> [% c.lh("Use high-quality thumbnails for pages") %] </h2>
     </td>
     <td class="config-td">
         [% IF hqthumbpages %]
         <input id="hqthumbpages" name="hqthumbpages" class="fa" type="checkbox" checked> [% ELSE %]
         <input id="hqthumbpages" name="hqthumbpages" class="fa" type="checkbox"> [% END %]
         <label for="hqthumbpages">
-            <br>为提升性能，LANraragi会生成较低质量的页面缩略图。
-            <br>如果启用此选项，将会为页面生成与封面缩略图相同质量
-            的缩略图。
+            <br>[% c.lh("LANraragi generates lower-quality thumbnails for archive pages for performance reasons.") %]
+            <br>[% c.lh("If this option is checked, it will instead generate page thumbnails at the same quality as cover thumbnails.") %]
         </label>
     </td>
 </tr>
 
 <tr>
     <td class="option-td">
-        <h2 class="ih"> 使用 JPEG XL 格式生成缩略图 </h2>
+        <h2 class="ih"> [% c.lh("Use JPEG XL for thumbnails") %] </h2>
     </td>
     <td class="config-td">
         [% IF jxlthumbpages %]
         <input id="jxlthumbpages" name="jxlthumbpages" class="fa" type="checkbox" checked> [% ELSE %]
         <input id="jxlthumbpages" name="jxlthumbpages" class="fa" type="checkbox"> [% END %]
         <label for="jxlthumbpages">
-            <br>为了确保兼容性和性能，LANraragi默认生成 JPEG 格式的缩略图。
-            <br>如果启用此选项，将使用 JPEG XL 格式生成缩略图。
+            <br>[% c.lh("LANraragi generates JPEG thumbnails for compatibility and performance reasons.") %]
+            <br>[% c.lh("If this option is checked, it will instead generate thumbnails using JPEG XL.") %]
             <br>目前对JPEG XL的支持较少，如果你启用后发现缩略图显示异常，请禁用此选项。
         </label>
     </td>
@@ -45,19 +44,19 @@
 
 <tr>
     <td class="option-td">
-        <input id="genthumb-button" class='stdbtn' type='button' value='生成缺失缩略图' />
+        <input id="genthumb-button" class='stdbtn' type='button' value='[% c.lh("Generate Missing Thumbnails") %]' />
     </td>
     <td class="config-td">
-        为所有缺失缩略图的档案生成缩略图。
+        [% c.lh("Generate Thumbnails for all archives that don't have one yet.") %]
     </td>
 </tr>
 
 <tr>
     <td class="option-td">
-        <input id="forcethumb-button" class='stdbtn' type='button' value='重新生成所有缩略图' />
+        <input id="forcethumb-button" class='stdbtn' type='button' value='[% c.lh("Regenerate all Thumbnails") %]' />
     </td>
     <td class="config-td">
-        重新生成所有缩略图。此操作可能需要一些时间！
+        [% c.lh("Regenerate all thumbnails. This might take a while!") %]
     </td>
 </tr>
 
@@ -65,29 +64,28 @@
 
 <tr>
     <td class="option-td">
-        <h2 class="ih"> 添加时间戳标签 </h2>
+        <h2 class="ih"> [% c.lh("Add Timestamp Tag") %] </h2>
     </td>
     <td class="config-td">
         [% IF usedateadded %]
         <input id="usedateadded" name="usedateadded" class="fa" type="checkbox" checked> [% ELSE %]
         <input id="usedateadded" name="usedateadded" class="fa" type="checkbox"> [% END %]
         <label for="usedateadded">
-            <br>如果启用，LANraragi会在新添加的档案中加上一个
-            名为“date_added”的具有当前UNIX时间戳的标签。
+            <br>[% c.lh("If enabled, LANraragi will add the UNIX timestamp of the current time as a tag under the \"date_added\" namespace to newly added archives.") %]
         </label>
     </td>
 </tr>
 
 <tr class="datemodified">
     <td class="option-td">
-        <h2 class="ih"> 使用“最后修改”时间 </h2>
+        <h2 class="ih"> [% c.lh("Use \"Last modified\" Time") %] </h2>
     </td>
     <td class="config-td">
         [% IF usedatemodified %]
         <input id="usedatemodified" name="usedatemodified" class="fa" type="checkbox" checked> [% ELSE %]
         <input id="usedatemodified" name="usedatemodified" class="fa" type="checkbox"> [% END %]
         <label for="usedatemodified">
-            <br>启用此选项后，LANraragi将使用文件的修改时间来设置“date_added”时间戳而非当前时间。
+            <br>[% c.lh("Enabling this will use file modified time instead of current time when setting \"date_added\" timestamps.") %]
         </label>
     </td>
 </tr>
@@ -96,20 +94,19 @@
 
 <tr>
     <td class="option-td">
-        <h2 class="ih"> 标签规则 </h2>
+        <h2 class="ih"> [% c.lh("Tag Rules") %] </h2>
     </td>
     <td class="config-td">
         <input id="tagruleson" name="tagruleson" class="fa" type="checkbox" [% IF tagruleson %]checked[% END %]>
         <br>
         <textarea class="stdinput" size="20" style='width:100%; height:196px' name="tagrules">[% tagrules %]</textarea>
-        <br>使用插件设置档案标签时，标签规则将在保存
-        至数据库前应用。
-        <br>用换行符分隔规则。
-        <br><b>-tag | tag</b> : 移除该标签（类似黑名单）
-        <br><b>-namespace:*</b> : 移除此命名空间下的所有标签
-        <br><b>~namespace</b> : 去除标签的命名空间
-        <br><b>tag -> new-tag</b> : 替换一个标签
-        <br><b>tag => new-tag</b> : 替换一个标签，但内部使用哈希表来提高性能。这些规则将在所有其他规则执行后 <i>一次性</i> 执行。
-        <br><b>namespace:* -> new-namespace:*</b> : 用新的命名空间替换旧命名空间
+        <br>[% c.lh("When tagging archives using Plugins, the rules specified here will be applied to the tags before saving them to the database.") %]
+        <br>[% c.lh("Split rules with linebreaks.") %]
+        <br>[% c.lh("<b>-tag | tag</b> : removes the tag (like a blacklist)") %]
+        <br>[% c.lh("<b>-namespace:*</b> : removes all tags within this namespace") %]
+        <br>[% c.lh("namespace : strips the namespace from the tags") %]
+        <br>[% c.lh("<b>tag -> new-tag</b> : replaces one tag") %]
+        <br>[% c.lh("<b>tag => new-tag</b> : replaces one tag, but use a hash table internally for faster performance. These rules will be executed <i>once</i> after all other rules.") %]
+        <br>[% c.lh("<b>namespace:* -> new-namespace:*</b> : replaces the namespace with the new one") %]
     </td>
 </tr>
