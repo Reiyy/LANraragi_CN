@@ -31,7 +31,7 @@ sub plugin_info {
            <i class='fa fa-exclamation-circle'></i> <b>此插件可能会根据你的搜索内容返回无效结果！</b> <br/>FAKKU 的搜索 API 精度较低，建议尽可能使用 Chaika.moe 插件",
         icon =>
           "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAFiUAABYlAUlSJPAAAACZSURBVDhPlY+xDYQwDEWvZgRGYA22Y4frqJDSZhFugiuuo4cqPGT0iTjAYL3C+fGzktc3hEcsQvJq6HtjE2Jdv4viH4a4pWnL8q4A6g+ET9P8YhS2/kqwIZXWnwqChDxPfCFfD76wOzJ2IOR/0DSwnuRKYAKUW3gq2OsJTYM0jr7QVRVwlabJEaw3ARYBcmFXeomxphIeEMIMmh3lOLQR+QQAAAAASUVORK5CYII=",
-        oneshot_arg => "FAKKU Gallery URL (Will attach tags matching this exact gallery to your archive)",
+        oneshot_arg => "FAKKU 画廊URL（将匹配该画廊的标签到档案）",
         parameters  => [
             { type => "bool", desc => "添加“Source”标签" }, { type => "bool", desc => "仅使用当前标题进行精确匹配" }
         ]

@@ -1,8 +1,8 @@
 {
     "name": "lanraragi",
     "version": "0.9.31",
-    "version_name": "Earthlings On Fire (January 1997 pre-show)",
-    "description": "I'm under Japanese influence and my honor's at stake!",
+    "version_name": "地球生灵炽燃（1997年1月预热场）",
+    "description": "我一世英名恐怕要毁在日本文化的影响下了！",
     "scripts": {
         "test": "prove -r -l -v tests/",
         "lanraragi-installer": "perl ./tools/install.pl",

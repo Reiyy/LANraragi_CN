@@ -40,7 +40,7 @@ sub plugin_info {
 
 #If your plugin uses/needs custom arguments, input their name here.
 #This name will be displayed in plugin configuration next to an input box for global arguments, and in archive edition for one-shot arguments.
-        oneshot_arg => "Pixiv artwork URL or illustration ID (e.g. pixiv.net/en/artworks/123456 or 123456.)",
+        oneshot_arg => "Pixiv作品URL或插画ID（例如：pixiv.net/en/artworks/123456 或 123456）",
         parameters  => [
             {   type => 'string',
                 desc =>

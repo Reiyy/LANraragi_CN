@@ -45,7 +45,7 @@ sub plugin_info {
             { type => "bool", desc => "仅搜索已删除的画廊" },
 
         ],
-        oneshot_arg => "E-H Gallery URL (Will attach tags matching this exact gallery to your archive)",
+        oneshot_arg => "E-H 画廊URL（将匹配该画廊的标签到档案）",
         cooldown    => 4
     );
 
