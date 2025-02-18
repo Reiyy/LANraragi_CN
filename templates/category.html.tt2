@@ -57,8 +57,8 @@
                 [% c.lh("You can create new categories here or edit existing ones.") %] </br></br>
 
                 <div style="text-align:center">
-                    <input id='new-static' type='button' value='New Static Category' class='stdbtn'>
-                    <input id='new-dynamic' type='button' value='New Dynamic Category' class='stdbtn'>
+                    <input id='new-static' type='button' value='新建静态分类' class='stdbtn'>
+                    <input id='new-dynamic' type='button' value='新建动态分类' class='stdbtn'>
                 </div> <br>
 
                 [% c.lh("Select a category in the combobox below to edit its name, the archives it contains, or its predicate.") %]

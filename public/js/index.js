@@ -669,11 +669,11 @@ Index.loadCategories = function () {
             // Queue some hardcoded categories at the beginning - those are special-cased in the DataTables variant of the search endpoint. 
             let html = `<div style='display:inline-block'>
                             <input class='favtag-btn ${(("NEW_ONLY" === Index.selectedCategory) ? "toggled" : "")}' 
-                            type='button' id='NEW_ONLY' value='🆕 仅新档案' 
+                            type='button' id='NEW_ONLY' value='🆕 新档案' 
                             onclick='Index.toggleCategory(this)' title='点击此处，将仅显示新档案。'/>
                         </div><div style='display:inline-block'>
                             <input class='favtag-btn ${(("UNTAGGED_ONLY" === Index.selectedCategory) ? "toggled" : "")}' 
-                            type='button' id='UNTAGGED_ONLY' value='🏷️ 仅无标签' 
+                            type='button' id='UNTAGGED_ONLY' value='🏷️ 无标签' 
                             onclick='Index.toggleCategory(this)' title='点击此处，将仅显示无标签档案。'/>
                         </div>`;
 
