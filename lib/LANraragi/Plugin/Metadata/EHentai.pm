@@ -1,5 +1,8 @@
 package LANraragi::Plugin::Metadata::EHentai;
 
+use v5.36;
+use experimental 'try';
+
 use strict;
 use warnings;
 no warnings 'uninitialized';
@@ -25,7 +28,7 @@ sub plugin_info {
         namespace   => "ehplugin",
         login_from  => "ehlogin",
         author      => "Difegue and others",
-        version     => "2.5.2",
+        version     => "2.6",
         description =>
           "在 g.e-hentai 上搜索与你的档案匹配的标签。<br/><i class='fa fa-exclamation-circle'></i> 此插件将使用档案的 source: 标签（如果存在）",
         icon =>
@@ -42,7 +45,7 @@ sub plugin_info {
             { type => "bool", desc => "仅搜索已删除的画廊" },
 
         ],
-        oneshot_arg => "E-H Gallery URL (Will attach tags matching this exact gallery to your archive)",
+        oneshot_arg => "E-H 画廊URL（将匹配该画廊的标签到档案）",
         cooldown    => 4
     );
 
@@ -50,6 +53,8 @@ sub plugin_info {
 
 #Mandatory function to be implemented by your plugin
 sub get_tags {
+
+    no warnings 'experimental::try';
 
     shift;
     my $lrr_info = shift;                                                                               # Global info hash
@@ -69,37 +74,34 @@ sub get_tags {
     if ( $lrr_info->{oneshot_param} =~ /.*\/g\/([0-9]*)\/([0-z]*)\/*.*/ ) {
         $gID    = $1;
         $gToken = $2;
-        $logger->debug("跳过搜索，本次使用来自参数的画廊 $gID / $gToken");
+        $logger->debug("跳过搜索，本次使用来自画廊的参数 $gID / $gToken");
     } elsif ( $lrr_info->{existing_tags} =~ /.*source:\s*(?:https?:\/\/)?e(?:x|-)hentai\.org\/g\/([0-9]*)\/([0-z]*)\/*.*/gi ) {
         $gID    = $1;
         $gToken = $2;
         $hasSrc = 1;
-        $logger->debug("跳过搜索，本次使用来自参数的画廊 $gID / $gToken");
+        $logger->debug("Skipping search and using gallery $gID / $gToken from source tag");
     } else {
 
         # Craft URL for Text Search on EH if there's no user argument
-        ( $gID, $gToken ) = &lookup_gallery(
-            $lrr_info->{archive_title},
-            $lrr_info->{existing_tags},
-            $lrr_info->{thumbnail_hash},
-            $ua, $domain, $lang, $usethumbs, $search_gid, $expunged
-        );
+        try {
+            ( $gID, $gToken ) = &lookup_gallery(
+                $lrr_info->{archive_title},
+                $lrr_info->{existing_tags},
+                $lrr_info->{thumbnail_hash},
+                $ua, $domain, $lang, $usethumbs, $search_gid, $expunged
+            );
+        } catch ($e) {
+            $logger->error($e);
+            die $e;
+        }
     }
 
-    # If an error occured, return a hash containing an error message.
-    # LRR will display that error to the client.
-    # Using the GToken to store error codes - not the cleanest but it's convenient
     if ( $gID eq "" ) {
-
-        if ( $gToken ne "" ) {
-            $logger->error($gToken);
-            return ( error => $gToken );
-        }
-
-        $logger->info("未找到匹配的 EH 画廊！");
-        return ( error => "未找到匹配的 EH 画廊！" );
+        my $message = "未找到匹配的 EH 画廊！";
+        $logger->info($message);
+        die "${message}\n";
     } else {
-        $logger->debug("EH API Token是 $gID / $gToken");
+        $logger->debug("EH API Tokens are $gID / $gToken");
     }
 
     my ( $ehtags, $ehtitle ) = &get_tags_from_EH( $ua, $gID, $gToken, $jpntitle, $additionaltags );
@@ -120,9 +122,8 @@ sub get_tags {
 ## EH Specific Methods
 ######
 
-sub lookup_gallery {
+sub lookup_gallery ( $title, $tags, $thumbhash, $ua, $domain, $defaultlanguage, $usethumbs, $search_gid, $expunged ) {
 
-    my ( $title, $tags, $thumbhash, $ua, $domain, $defaultlanguage, $usethumbs, $search_gid, $expunged ) = @_;
     my $logger = get_plugin_logger();
     my $URL    = "";
 
@@ -181,39 +182,24 @@ sub lookup_gallery {
         $URL = $URL . "&f_sh=on";
     }
 
-    $logger->debug("使用URL $URL（档案标题）");
+    $logger->debug("Using URL $URL (archive title)");
     return &ehentai_parse( $URL, $ua );
 }
 
-# ehentai_parse(URL, UA)
 # Performs a remote search on e- or exhentai, and returns the ID/token matching the found gallery.
-sub ehentai_parse() {
-
-    my ( $url, $ua ) = @_;
+sub ehentai_parse ( $url, $ua ) {
 
     my $logger = get_plugin_logger();
+    my $dom    = search_gallery( $url, $ua );
 
-    my ( $dom, $error ) = search_gallery( $url, $ua );
-    if ($error) {
-        return ( "", $error );
-    }
+    # Get the first row of the search results
+    # The "glink" class is parented by a <a> tag containing the gallery link in href.
+    # This works in Minimal, Minimal+ and Compact modes, which should be enough.
+    my $firstgal = $dom->at(".glink")->parent->attr('href');
 
-    my $gID    = "";
-    my $gToken = "";
-
-    eval {
-        # Get the first row of the search results
-        # The "glink" class is parented by a <a> tag containing the gallery link in href.
-        # This works in Minimal, Minimal+ and Compact modes, which should be enough.
-        my $firstgal = $dom->at(".glink")->parent->attr('href');
-
-        # A EH link looks like xhentai.org/g/{gallery id}/{gallery token}
-        my $url    = ( split( 'hentai.org/g/', $firstgal ) )[1];
-        my @values = ( split( '/',             $url ) );
-
-        $gID    = $values[0];
-        $gToken = $values[1];
-    };
+    # A EH link looks like xhentai.org/g/{gallery id}/{gallery token}
+    $url = ( split( 'hentai.org/g/', $firstgal ) )[1];
+    my ( $gID, $gToken ) = ( split( '/', $url ) );
 
     if ( index( $dom->to_string, "You are opening" ) != -1 ) {
         my $rand = 15 + int( rand( 51 - 15 ) );
@@ -225,35 +211,28 @@ sub ehentai_parse() {
     return ( $gID, $gToken );
 }
 
-sub search_gallery {
+sub search_gallery ( $url, $ua ) {
 
-    my ( $url, $ua ) = @_;
     my $logger = get_plugin_logger();
 
     my $res = $ua->max_redirects(5)->get($url)->result;
 
     if ( index( $res->body, "Your IP address has been" ) != -1 ) {
-        return ( "", "因加载页面过多，你的IP地址已被暂时禁止访问EH。" );
+        die "因加载页面过多，你的IP地址已被暂时禁止访问EH。\n";
     }
 
-    return ( $res->dom, undef );
+    return $res->dom;
 }
 
 # get_tags_from_EH(userAgent, gID, gToken, jpntitle, additionaltags)
 # Executes an e-hentai API request with the given JSON and returns tags and title.
-sub get_tags_from_EH {
+sub get_tags_from_EH ( $ua, $gID, $gToken, $jpntitle, $additionaltags ) {
 
-    my ( $ua, $gID, $gToken, $jpntitle, $additionaltags ) = @_;
     my $uri = 'https://api.e-hentai.org/api.php';
 
     my $logger = get_plugin_logger();
 
     my $jsonresponse = get_json_from_EH( $ua, $gID, $gToken );
-
-    #if an error occurs(no response) return empty strings.
-    if ( !$jsonresponse ) {
-        return ( "", "" );
-    }
 
     my $data    = $jsonresponse->{"gmetadata"};
     my @tags    = @{ @$data[0]->{"tags"} };
@@ -280,9 +259,8 @@ sub get_tags_from_EH {
     return ( $ehtags, $ehtitle );
 }
 
-sub get_json_from_EH {
+sub get_json_from_EH ( $ua, $gID, $gToken ) {
 
-    my ( $ua, $gID, $gToken ) = @_;
     my $uri = 'https://api.e-hentai.org/api.php';
 
     my $logger = get_plugin_logger();
@@ -297,11 +275,12 @@ sub get_json_from_EH {
     )->result;
 
     my $textrep = $rep->body;
-    $logger->debug("E-H API返回了以下JSON：$textrep");
+    $logger->debug("E-H API returned this JSON: $textrep");
 
     my $jsonresponse = $rep->json;
     if ( exists $jsonresponse->{"error"} ) {
-        return;
+        $logger->error( $jsonresponse->{"error"} );
+        die "E-H API returned an error.\n";
     }
 
     return $jsonresponse;

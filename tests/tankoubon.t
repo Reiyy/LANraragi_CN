@@ -29,10 +29,12 @@ LANraragi::Model::Stats::build_stat_hashes();
 my ( $total, $filtered, @rgs );
 
 # Get Tankoubon
-my %tankoubon = LANraragi::Model::Tankoubon::get_tankoubon("TANK_1589141306", 0, 0);
+my ( $total, $filtered, %tankoubon ) = LANraragi::Model::Tankoubon::get_tankoubon("TANK_1589141306", 0, 0);
 is($tankoubon{id}, "TANK_1589141306", 'ID test');
 is($tankoubon{name}, "Hello", 'Name test');
-ok($tankoubon{archives}[0] eq "28697b96f0ac5858be2614ed10ca47742c9522fd", 'Archives test');
+is($total, 2, 'Total Test');
+is($filtered, 2, 'Count Test');
+ok($tankoubon{archives}[0] eq "28697b96f0ac5858be2666ed10ca47742c955555", 'Archives test');
 
 # List Tankoubon
 ( $total, $filtered, @rgs ) = LANraragi::Model::Tankoubon::get_tankoubon_list(0);

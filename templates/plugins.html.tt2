@@ -11,42 +11,42 @@
 
 	<link type="image/png" rel="icon" href="/favicon.ico" />
 	<link rel="manifest" href="app.webappmanifest" />
-	<link rel="stylesheet" type="text/css" href="/css/lrr.css?[% version%]" />
-	<link rel="stylesheet" type="text/css" href="/css/config.css" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/lrr.css?$version") %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/config.css") %]" />
 
-	<link rel="stylesheet" type="text/css" href="/css/vendor/fontawesome-all.min.css" />
-	<link rel="stylesheet" type="text/css" href="/css/vendor/jquery.fileupload.css" />
-	<link rel="stylesheet" type="text/css" href="/css/vendor/allcollapsible.min.css" />
-	<link rel="stylesheet" type="text/css" href="/css/vendor/ReactToastify.min.css" />
-	<link rel="stylesheet" type="text/css" href="/css/vendor/sweetalert2.min.css" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/vendor/fontawesome-all.min.css") %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/vendor/jquery.fileupload.css") %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/vendor/allcollapsible.min.css") %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/vendor/ReactToastify.min.css") %]" />
+	<link rel="stylesheet" type="text/css" href="[% c.url_for("/css/vendor/sweetalert2.min.css") %]" />
 	[% csshead %]
 
-	<script src="/js/vendor/jquery.min.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/preact.umd.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/hooks.umd.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/compat.umd.js" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/jquery.min.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/preact.umd.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/hooks.umd.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/compat.umd.js") %]" type="text/JAVASCRIPT"></script>
 	<script>window.React = window.preactCompat; window.react = window.preactCompat;</script>
-	<script src="/js/vendor/clsx.min.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/react-toastify.umd.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/jquery.ui.widget.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/jquery.fileupload.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/allcollapsible.min.js" type="text/JAVASCRIPT"></script>
-	<script src="/js/vendor/sweetalert2.min.js" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/clsx.min.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/react-toastify.umd.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/jquery.ui.widget.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/jquery.fileupload.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/allcollapsible.min.js") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/vendor/sweetalert2.min.js") %]" type="text/JAVASCRIPT"></script>
 
-	<script src="/js/common.js?[% version%]" type="text/JAVASCRIPT"></script>
-	<script src="/js/server.js?[% version%]" type="text/JAVASCRIPT"></script>
-	<script src="/js/plugins.js?[% version%]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/common.js?$version") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/server.js?$version") %]" type="text/JAVASCRIPT"></script>
+	<script src="[% c.url_for("/js/plugins.js?$version") %]" type="text/JAVASCRIPT"></script>
 
 </head>
 
 <body>
 
 	<div class="ido" style="text-align:center;">
-		<h1 class="ih" style="text-align:center">插件配置</h1>
-		<br /> 切换自动运行开关来在元数据插件上启用/禁用自动运行。
-		<br /> 如果你启用了自动运行，当新档案被添加时插件会自动应用。
-		<br /> 如果插件具有配置项，你也可以在这里进行设置。
-		<br /> 你也可以在这里触发脚本。触发脚本时将先保存你的插件设置。
+		<h1 class="ih" style="text-align:center">[% c.lh("Plugin Configuration") %]</h1>
+		<br /> [% c.lh("Enable/Disable Auto-Plugin on metadata plugins by checking the toggles.") %]
+		<br /> [% c.lh("Plugins will be automatically used on new archives if they're toggled here.") %]
+		<br /> [% c.lh("If they have configuration variables, you can set them here as well.") %]
+		<br /> [% c.lh("You can also trigger Scripts here. Triggering a script will save your Plugin settings beforehand.") %]
 		<br />
 
 		<form name="editPluginForm" id="editPluginForm" enctype="multipart/form-data" method="post">
@@ -55,7 +55,7 @@
 				<ul class="collapsible extensible with-right-caret">
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-plug" aria-hidden="true"></i> 登录插件
+							<i class="fa fa-plug" aria-hidden="true"></i> [% c.lh("Login Plugins") %]
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = logins %]
@@ -63,7 +63,7 @@
 					</li>
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fas fa-cloud-download-alt" aria-hidden="true"></i> 下载器
+							<i class="fas fa-cloud-download-alt" aria-hidden="true"></i> [% c.lh("Downloaders") %]
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = downloaders %]
@@ -71,7 +71,7 @@
 					</li>
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-scroll" aria-hidden="true"></i> 脚本
+							<i class="fa fa-scroll" aria-hidden="true"></i> [% c.lh("Scripts") %]
 						</div>
 						<div class="collapsible-body">
 							[% INCLUDE pluginlist plugins = scripts %]
@@ -84,19 +84,17 @@
 				<ul class="collapsible extensible with-right-caret">
 					<li class="option-flyout">
 						<div class="collapsible-title caret-right">
-							<i class="fa fa-digital-tachograph" aria-hidden="true"></i> 元数据插件
+							<i class="fa fa-digital-tachograph" aria-hidden="true"></i> [% c.lh("Metadata Plugins") %]
 						</div>
 						<div class="collapsible-body">
 
-							<h1 class="ih" style="display:inline">允许插件替换档案标题：</h1>
+							<h1 class="ih" style="display:inline">[% c.lh("Allow Plugins to replace archive titles:") %] </h1>
 							[% IF replacetitles %]
 							<input id="replacetitles" name="replacetitles" class="fa" type="checkbox" checked> [% ELSE
 							%]
 							<input id="replacetitles" name="replacetitles" class="fa" type="checkbox"> [% END %]
 							<label for="replacetitles">
-								<br> 如果启用，元数据插件将能在添加标签
-								时
-								更改档案标题。
+								<br> [% c.lh("If enabled, metadata plugins will be able to change the title of your archives alongside adding tags to them.") %]
 							</label>
 							<br />
 							<br />
@@ -110,15 +108,15 @@
 			<h1 style="text-align:center">
 				<span class="script-running" style="display:none">
 					<i aria-hidden="true" class="fa fa-3x fa-atom fa-spin"></i> <br>
-					一个脚本正在运行...
+					[% c.lh("A script is running...") %]
 				</span>
-				<input id='save' class='stdbtn' type='button' value='保存插件配置' />
+				<input id='save' class='stdbtn' type='button' value='[% c.lh("Save Plugin Configuration") %]' />
 				<span id="plugin-upload" class='stdbtn fileinput-button'
 					style="margin-bottom: -10px; font-weight:normal">
-					<span style="position:absolute; top:5px; left:25%">上传插件</span>
+					<span style="position:absolute; top:5px; left:25%">[% c.lh("Upload Plugin") %]</span>
 					<input type='file' name='file' multiple id='fileupload'>
 				</span>
-				<input id='return' class='stdbtn' type='button' value='返回档案库' />
+				<input id='return' class='stdbtn' type='button' value='[% c.lh("Return to Library") %]' />
 			</h1>
 		</form>
 	</div>
@@ -133,6 +131,7 @@
 [% FOREACH plugin IN plugins %]
 <span style="display:inline-block; text-align: left; width:80%; border-bottom-width: 1px;border-bottom-style: solid">
 	[% IF plugin.icon %]
+	[%# the plugin.icon attr is always a data: URI, so we don't need to worry about the base URL %]
 	<img height=20 width=20 src="[% plugin.icon %]" />
 	[% ELSE %]
 	<i class="fa fa-puzzle-piece" style="font-size:20px"></i>
@@ -150,7 +149,7 @@
 		[% END %]
 
 		[% IF plugin.login_from %]
-		<i class="fa fa-plug" aria-hidden="true"></i> 此插件依赖于登录插件 "[% plugin.login_from %]".
+		<i class="fa fa-plug" aria-hidden="true"></i> 该插件依赖于登录插件 "[% plugin.login_from %]".
 		[% END %]
 
 	</div>
@@ -180,7 +179,7 @@
 			<tr>
 				<td colspan="2">
 					<input class='stdbtn' type='button' onclick="Server.triggerScript('[% plugin.namespace %]');"
-						value='触发脚本' />
+						value='Trigger Script' />
 				</td>
 			</tr>
 		</tbody>
@@ -203,7 +202,7 @@
 						<b> [% param.desc %] : </b>
 					</td>
 					<td>
-						<input style="max-width:200px" size="20" name="[% plugin.namespace %]_CFG_[% loop.count %]"
+						<input style="max-width:200px" size="20" name="[% plugin.namespace %]_CFG_[% IF param.exists('name') %][% param.name %][% ELSE %][% loop.count %][% END %]"
 							type=[% SWITCH param.type %] # time for some real-ass typage [% CASE 'string' %] "text"
 							value="[% param.value %]" class="stdinput" [% CASE 'bool' %] "checkbox" value="1" class="fa"
 							[% IF param.value %] checked [% END %] [% CASE 'int' %] "number" value="[% param.value %]"

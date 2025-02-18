@@ -18,8 +18,8 @@ ENTRYPOINT ["//init"]
 
 # Check application health
 HEALTHCHECK --interval=1m --timeout=10s --retries=3 \
-  CMD wget --quiet --tries=1 --no-check-certificate --spider \
-  http://localhost:3000 || exit 1
+  CMD wget --quiet --tries=1 --no-check-certificate --spider -Y off \
+  http://127.0.0.1:3000 || exit 1
 
 #Default mojo server port
 EXPOSE 3000
@@ -63,6 +63,7 @@ COPY --chown=root:root /lib lib
 COPY --chown=root:root /public public
 COPY --chown=root:root /script script
 COPY --chown=root:root /templates templates
+COPY --chown=root:root /locales locales
 COPY --chown=root:root /tests tests
 COPY --chown=root:root /lrr.conf lrr.conf
 COPY --chown=root:root /tools/build/docker/redis.conf tools/build/docker/
@@ -78,6 +79,6 @@ RUN chmod +x /etc/s6-overlay/s6-rc.d/init/01-lrr-setup
 
 # Persistent volumes
 VOLUME [ "/root/lanraragi/content" ]
-VOLUME [ "/root/lanraragi/content/thumb" ]
+VOLUME [ "/root/lanraragi/thumb" ]
 VOLUME [ "/root/lanraragi/database"]
 VOLUME [ "/root/lanraragi/lib/LANraragi/Plugin/Sideloaded" ]

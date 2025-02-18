@@ -1,5 +1,8 @@
 package LANraragi::Model::Search;
 
+use feature qw(signatures);
+no warnings 'experimental::signatures';
+
 use strict;
 use warnings;
 use utf8;
@@ -9,7 +12,7 @@ use Redis;
 use Storable qw/ nfreeze thaw /;
 use Sort::Naturally;
 
-use LANraragi::Utils::Generic  qw(split_workload_by_cpu);
+use LANraragi::Utils::Generic  qw(split_workload_by_cpu intersect_arrays);
 use LANraragi::Utils::String   qw(trim);
 use LANraragi::Utils::Database qw(redis_decode redis_encode);
 use LANraragi::Utils::Logging  qw(get_logger);
@@ -19,31 +22,33 @@ use LANraragi::Model::Category;
 
 # do_search (filter, category_id, page, key, order, newonly, untaggedonly)
 # Performs a search on the database.
-sub do_search {
-
-    my ( $filter, $category_id, $start, $sortkey, $sortorder, $newonly, $untaggedonly ) = @_;
+sub do_search ( $filter, $category_id, $start, $sortkey, $sortorder, $newonly, $untaggedonly, $grouptanks ) {
 
     my $redis  = LANraragi::Model::Config->get_redis_search;
     my $logger = get_logger( "Search Engine", "lanraragi" );
 
-    unless ( $redis->exists("LAST_JOB_TIME") ) {
+    unless ( $redis->exists("LAST_JOB_TIME") && ( $redis->exists("LRR_TANKGROUPED") || !$grouptanks ) ) {
         $logger->error("搜索引擎尚未初始化。请稍等几秒钟。");
+
+        # TODO - This is the only case where the API returns -1, but it's not really handled well clientside at the moment.
         return ( -1, -1, () );
     }
 
-    # Search filter results
-    my $total = $redis->zcard("LRR_TITLES") + 0;    # Total number of archives (as int)
+    my $tankcount = $redis->scard("LRR_TANKGROUPED") + 0;
+
+    # Total number of archives (as int)
+    my $total = $grouptanks ? $tankcount : $redis->zcard("LRR_TITLES") - $tankcount;
 
     # Look in searchcache first
     my $sortorder_inv = $sortorder ? 0 : 1;
-    my $cachekey      = redis_encode("$category_id-$filter-$sortkey-$sortorder-$newonly-$untaggedonly");
-    my $cachekey_inv  = redis_encode("$category_id-$filter-$sortkey-$sortorder_inv-$newonly-$untaggedonly");
+    my $cachekey      = redis_encode("$category_id-$filter-$sortkey-$sortorder-$newonly-$untaggedonly-$grouptanks");
+    my $cachekey_inv  = redis_encode("$category_id-$filter-$sortkey-$sortorder_inv-$newonly-$untaggedonly-$grouptanks");
     my ( $cachehit, @filtered ) = check_cache( $cachekey, $cachekey_inv );
 
     # Don't use cache for history searches since setting lastreadtime doesn't (and shouldn't) cachebust
     unless ( $cachehit && $sortkey ne "lastread" ) {
         $logger->debug("无可用缓存（或按历史排序的搜索），正在进行完整的数据库解析。");
-        @filtered = search_uncached( $category_id, $filter, $sortkey, $sortorder, $newonly, $untaggedonly );
+        @filtered = search_uncached( $category_id, $filter, $sortkey, $sortorder, $newonly, $untaggedonly, $grouptanks );
 
         # Cache this query in the search database
         eval { $redis->hset( "LRR_SEARCHCACHE", $cachekey, nfreeze \@filtered ); };
@@ -63,9 +68,8 @@ sub do_search {
     return ( $total, $#filtered + 1, @filtered[ $start .. $end ] );
 }
 
-sub check_cache {
+sub check_cache ( $cachekey, $cachekey_inv ) {
 
-    my ( $cachekey, $cachekey_inv ) = @_;
     my $redis  = LANraragi::Model::Config->get_redis_search;
     my $logger = get_logger( "Search Cache", "lanraragi" );
 
@@ -95,9 +99,8 @@ sub check_cache {
 }
 
 # Grab all our IDs, then filter them down according to the following filters and tokens' ID groups.
-sub search_uncached {
+sub search_uncached ( $category_id, $filter, $sortkey, $sortorder, $newonly, $untaggedonly, $grouptanks ) {
 
-    my ( $category_id, $filter, $sortkey, $sortorder, $newonly, $untaggedonly ) = @_;
     my $redis    = LANraragi::Model::Config->get_redis_search;
     my $redis_db = LANraragi::Model::Config->get_redis;
     my $logger   = get_logger( "Search Core", "lanraragi" );
@@ -107,8 +110,16 @@ sub search_uncached {
 
     # Prepare array: For each token, we'll have a list of matching archive IDs.
     # We intersect those lists as we proceed to get the final result.
-    # Start with all our IDs.
-    my @filtered = $redis_db->keys('????????????????????????????????????????');
+    my @filtered;
+    if ($grouptanks) {
+
+        # Start with our tank IDs, and all other archive IDs that aren't in tanks
+        @filtered = $redis->smembers("LRR_TANKGROUPED");
+    } else {
+
+        # Start with all our archive IDs. Tank IDs won't be present in this search.
+        @filtered = $redis_db->keys('????????????????????????????????????????');
+    }
 
     # If we're using a category, we'll need to get its source data first.
     my %category = LANraragi::Model::Category::get_category($category_id);
@@ -174,6 +185,12 @@ sub search_uncached {
                 # This could be sped up with an index, but it's probably not worth it.
                 foreach my $id (@filtered) {
 
+                    # Tanks don't have a set pagecount property, so they're not included here for now.
+                    # TODO TANKS: Maybe an index would be good actually..
+                    if ( $id =~ /^TANK/ ) {
+                        next;
+                    }
+
                     # Default to 0 if null.
                     my $count = $redis_db->hget( $id, $col ) || 0;
 
@@ -235,20 +252,25 @@ sub search_uncached {
             if ( scalar @ids == 0 && !$isneg ) {
 
                 # No more results, we can end search here
-                $logger->trace("此关键词无结果，停止搜索。");
+                $logger->trace("No results for this token, halting search.");
                 @filtered = ();
                 last;
             } else {
-                $logger->trace( "为此关键词找到 " . scalar @ids . " 个结果。" );
+                $logger->trace( "Found " . scalar @ids . " results for this token." );
 
                 # Intersect the new list with the previous ones
                 @filtered = intersect_arrays( \@ids, \@filtered, $isneg );
+
+                if ( scalar @filtered == 0 ) {
+                    $logger->trace("No more results after intersection, halting search.");
+                    last;
+                }
             }
         }
     }
 
-    if ( $#filtered > 0 ) {
-        $logger->debug( "过滤后找到 " . $#filtered . " 个结果。" );
+    if ( scalar @filtered > 0 ) {
+        $logger->debug( "Found " . scalar @filtered . " results after filtering." );
 
         if ( !$sortkey ) {
             $sortkey = "title";
@@ -286,40 +308,10 @@ sub search_uncached {
     return @filtered;
 }
 
-# intersect_arrays(@array1, @array2, $isneg)
-# Intersect two arrays and return the result. If $isneg is true, return the difference instead.
-sub intersect_arrays {
-
-    my ( $array1, $array2, $isneg ) = @_;
-
-    # If array1 is empty, just return an empty array or the second array if $isneg is true
-    if ( scalar @$array1 == 0 ) {
-        return $isneg ? @$array2 : ();
-    }
-
-    # If array2 is empty, die since this sub shouldn't even be used in that case
-    if ( scalar @$array2 == 0 ) {
-        die "intersect_arrays called with an empty array2";
-    }
-
-    my %hash = map { $_ => 1 } @$array1;
-    my @result;
-
-    if ($isneg) {
-        @result = grep { !exists $hash{$_} } @$array2;
-    } else {
-        @result = grep { exists $hash{$_} } @$array2;
-    }
-
-    return @result;
-}
-
-# compute_search_filter($filter)
 # Transform the search engine syntax into a list of tokens.
 # A token object contains the tag, whether it must be an exact match, and whether it must be absent.
-sub compute_search_filter {
+sub compute_search_filter ($filter) {
 
-    my $filter = shift;
     my $logger = get_logger( "Search Core", "lanraragi" );
     my @tokens = ();
     if ( !$filter ) { $filter = ""; }
@@ -403,9 +395,8 @@ sub compute_search_filter {
     return @tokens;
 }
 
-sub sort_results {
+sub sort_results ( $sortkey, $sortorder, @filtered ) {
 
-    my ( $sortkey, $sortorder, @filtered ) = @_;
     my $redis = LANraragi::Model::Config->get_redis;
 
     my %tmpfilter = ();
@@ -428,7 +419,7 @@ sub sort_results {
 
         # For other tags, we use the first tag we found that matches the sortkey/namespace.
         # (If no tag, defaults to "zzzz")
-        %tmpfilter = map { $_ => ( $redis->hget( $_, "tags" ) =~ m/.*${re}:(.*)(\,.*|$)/ ) ? $1 : "zzzz" } @filtered;
+        %tmpfilter = map { $_ => ( $redis->hget( $_, "tags" ) =~ m/.*${re}:(.*?)(\,.*|$)/ ) ? $1 : "zzzz" } @filtered;
 
         # Read comments from the bottom up for a better understanding of this sort algorithm.
         @sorted = map { $_->[0] }                  # Map back to only having the ID

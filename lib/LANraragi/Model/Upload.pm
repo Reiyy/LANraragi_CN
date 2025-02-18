@@ -3,6 +3,10 @@ package LANraragi::Model::Upload;
 use strict;
 use warnings;
 use utf8;
+use v5.36;
+
+use strict;
+use warnings;
 
 use Redis;
 use URI::Escape;
@@ -11,11 +15,12 @@ use File::Temp qw(tempdir);
 use File::Find qw(find);
 use File::Copy qw(move);
 
-use LANraragi::Utils::Database qw(invalidate_cache compute_id);
-use LANraragi::Utils::Logging qw(get_logger);
+use LANraragi::Utils::Archive  qw(extract_thumbnail);
+use LANraragi::Utils::Database qw(invalidate_cache compute_id set_title set_summary);
+use LANraragi::Utils::Logging  qw(get_logger);
 use LANraragi::Utils::Database qw(redis_encode);
-use LANraragi::Utils::Generic qw(is_archive get_bytelength);
-use LANraragi::Utils::String qw(trim trim_CRLF trim_url);
+use LANraragi::Utils::Generic  qw(is_archive get_bytelength);
+use LANraragi::Utils::String   qw(trim trim_CRLF trim_url);
 
 use LANraragi::Model::Config;
 use LANraragi::Model::Plugins;
@@ -30,22 +35,22 @@ use LANraragi::Model::Category;
 # The file will be added to a category, if its ID is specified.
 # You can also specify tags to add to the metadata for the processed file before autoplugin is ran. (if it's enabled)
 #
-# Returns a status value, the ID and title of the file, and a status message.
-sub handle_incoming_file {
+# Returns an HTTP status code, the ID and title of the file, and a status message.
+sub handle_incoming_file ( $tempfile, $catid, $tags, $title, $summary ) {
 
-    my ( $tempfile, $catid, $tags )   = @_;
-    my ( $filename, $dirs,  $suffix ) = fileparse( $tempfile, qr/\.[^.]*/ );
+    my ( $filename, $dirs, $suffix ) = fileparse( $tempfile, qr/\.[^.]*/ );
     $filename = $filename . $suffix;
-    my $logger = get_logger( "文件上传/下载", "lanraragi" );
+    my $logger = get_logger( "File Upload/Download", "lanraragi" );
 
     # Check if file is an archive
     unless ( is_archive($filename) ) {
-        return ( 0, "deadbeef", $filename, "不支持的文件扩展名 ($filename)" );
+        $logger->debug("$filename is not an archive, halting upload process.");
+        return ( 415, "deadbeef", $filename, "Unsupported File Extension ($filename)" );
     }
 
     # Compute an ID here
     my $id = compute_id($tempfile);
-    $logger->debug("上传文件的ID是 $id");
+    $logger->debug("ID of uploaded file $filename is $id");
 
     # Future home of the file
     my $userdir     = LANraragi::Model::Config->get_userdir;
@@ -65,13 +70,13 @@ sub handle_incoming_file {
         unlink $tempfile;
 
         # The file already exists
-        my $suffix = "在配置中启用替换重复档案以替换旧档案";
+        my $suffix = " 在配置中启用替换重复档案以替换旧档案";
         my $msg =
           $isdupe
           ? "该文件已存在于库中。" . $suffix
           : "库中存在同名文件。" . $suffix;
 
-        return ( 0, $id, $filename, $msg );
+        return ( 409, $id, $filename, $msg );
     }
 
     # If we are replacing an existing one, just remove the old one first.
@@ -82,7 +87,7 @@ sub handle_incoming_file {
 
     # Add the file to the database ourselves so Shinobu doesn't do it
     # This allows autoplugin to be ran ASAP.
-    my $name = LANraragi::Utils::Database::add_archive_to_redis( $id, $output_file, $redis );
+    my $name = LANraragi::Utils::Database::add_archive_to_redis( $id, $output_file, $redis, $redis_search );
 
     # If additional tags were given to the sub, add them now.
     if ($tags) {
@@ -109,17 +114,29 @@ sub handle_incoming_file {
         }
     }
 
+    # Set title
+    if ($title) {
+        set_title( $id, $title );
+    }
+
+    # Set summary
+    if ($summary) {
+        set_summary( $id, $summary );
+    }
+
     # Move the file to the content folder.
     # Move to a .upload first in case copy to the content folder takes a while...
-    move( $tempfile, $output_file . ".upload" ) or return ( 0, $id, $name, "The file couldn't be moved to your content folder: $!" );
+    move( $tempfile, $output_file . ".upload" )
+      or return ( 500, $id, $name, "The file couldn't be moved to your content folder: $!" );
 
-    # Then rename inside the content folder itself to proc Shinobu.
-    move( $output_file . ".upload", $output_file ) or  return ( 0, $id, $name, "The file couldn't be renamed in your content folder: $!" );
+    # Then rename inside the content folder itself to proc Shinobu's filemap update.
+    move( $output_file . ".upload", $output_file )
+      or return ( 500, $id, $name, "The file couldn't be renamed in your content folder: $!" );
 
     # If the move didn't signal an error, but still doesn't exist, something is quite spooky indeed!
     # Really funky permissions that prevents viewing folder contents?
     unless ( -e $output_file ) {
-        return ( 0, $id, $name, "该文件无法移动到您的内容文件夹！" );
+        return ( 500, $id, $name, "该文件无法移动到您的内容文件夹！" );
     }
 
     # Now that the file has been copied, we can add the timestamp tag and calculate pagecount.
@@ -130,7 +147,11 @@ sub handle_incoming_file {
     $redis->quit();
     $redis_search->quit();
 
-    $logger->debug("在新上传的文件 $id 上运行自动插件...");
+    # Generate thumbnail
+    my $thumbdir = LANraragi::Model::Config->get_thumbdir;
+    extract_thumbnail( $thumbdir, $id, 1, 1, 1 );
+
+    $logger->debug("Running autoplugin on newly uploaded file $id...");
 
     my ( $succ, $fail, $addedtags, $newtitle ) = LANraragi::Model::Plugins::exec_enabled_plugins_on_file($id);
     my $successmsg = "$succ 插件使用成功，$fail 插件失败，$addedtags 标签已添加。";
@@ -155,14 +176,12 @@ sub handle_incoming_file {
     # Invalidate search cache ourselves, Shinobu won't do it since the file is already in the database
     invalidate_cache();
 
-    return ( 1, $id, $name, $successmsg );
+    return ( 200, $id, $name, $successmsg );
 }
 
 # Download the given URL, using the given Mojo::UserAgent object.
 # This downloads the URL to a temporaryfolder and returns the full path to the downloaded file.
-sub download_url {
-
-    my ( $url, $ua ) = @_;
+sub download_url ( $url, $ua ) {
 
     my $logger = get_logger( "文件上传/下载", "lanraragi" );
 
@@ -173,11 +192,28 @@ sub download_url {
     my $tempdir = tempdir();
 
     # Download the URL, with 5 maximum redirects and unlimited response size.
-    my $tx           = $ua->max_response_size(0)->max_redirects(5)->get($url);
-    my $content_disp = $tx->result->headers->content_disposition;
-    my $filename     = "Not_an_archive";                                         #placeholder;
+    my $filename = "Not_an_archive";
+    my ( $tx, $content_disp );
 
-    $logger->debug("内容处置头: $content_disp");
+    my $attempts = 0;
+
+    while ( !$content_disp && $attempts < 5 ) {
+        $tx           = $ua->max_response_size(0)->max_redirects(5)->get($url);
+        $content_disp = $tx->result->headers->content_disposition;
+
+        unless ($content_disp) {
+            $logger->warn("No valid Content-Disposition header received, waiting and retrying... (attempt $attempts / 5)");
+            $logger->debug( "Result of this attempt: " . $tx->result->body );
+            sleep 1;
+            $attempts++;
+        }
+    }
+
+    if ( !$content_disp ) {
+        die( "No valid Content-Disposition header received after 5 attempts, aborting. (Last result: " . $tx->result->body . ")" );
+    }
+
+    $logger->debug("Content-Disposition Header: $content_disp");
     if ( $content_disp =~ /.*filename=\"(.*)\".*/gim ) {
         $filename = $1;
     } elsif ( $content_disp =~ /.*filename\*=UTF-8''(.*)/gim ) {
@@ -189,10 +225,11 @@ sub download_url {
     } elsif ( $url =~ /([^\/]+)\/?$/gm ) {
 
         # Fallback to the last element of the URL as the filename.
+        $logger->debug("No filename found in header, using URL as filename.");
         $filename = $1;
     }
 
-    $logger->debug("文件名: $filename");
+    $logger->debug("Filename: $filename");
 
     # remove invalid Windows chars
     $filename =~ s@[\\/:"*?<>|]+@@g;
@@ -207,7 +244,7 @@ sub download_url {
         $filename = substr( $filename, 0, -1 );
     }
     $filename = $filename . $ext;
-    $logger->debug("文件名清理后: $filename");
+    $logger->debug("Filename post clean: $filename");
     $tx->result->save_to("$tempdir\/$filename");
 
     # Update $tempfile to the exact reference created by the host filesystem

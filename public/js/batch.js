@@ -18,9 +18,9 @@ Batch.initializeAll = function () {
     $(document).on("click.start-batch", "#start-batch", Batch.startBatchCheck);
     $(document).on("click.restart-job", "#restart-job", Batch.restartBatchUI);
     $(document).on("click.cancel-job", "#cancel-job", Batch.cancelBatch);
-    $(document).on("click.server-config", "#server-config", () => LRR.openInNewTab("./config"));
-    $(document).on("click.plugin-config", "#plugin-config", () => LRR.openInNewTab("./config/plugins"));
-    $(document).on("click.return", "#return", () => { window.location.href = "/"; });
+    $(document).on("click.server-config", "#server-config", () => LRR.openInNewTab(new LRR.apiURL("/config")));
+    $(document).on("click.plugin-config", "#plugin-config", () => LRR.openInNewTab(new LRR.apiURL("/config/plugins")));
+    $(document).on("click.return", "#return", () => { window.location.href = new LRR.apiURL("/"); });
 
     Batch.selectOperation();
     Batch.showOverride();
@@ -168,7 +168,8 @@ Batch.startBatch = function () {
 
     let wsProto = "ws://";
     if (document.location.protocol === "https:") wsProto = "wss://";
-    Batch.socket = new WebSocket(`${wsProto + window.location.host}/batch/socket`);
+    let socket_path = new LRR.apiURL("/batch/socket");
+    Batch.socket = new WebSocket(`${wsProto + window.location.host}${socket_path}`);
 
     Batch.socket.onopen = function () {
         const command = commandBase;
