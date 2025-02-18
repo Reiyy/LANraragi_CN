@@ -68,20 +68,13 @@ Open source server for archival of comics/manga, running on Mojolicious + Redis.
 
 * Two different user interfaces : compact archive list with thumbnails-on-hover, or thumbnail view.
 
-<<<<<<< HEAD
-=======
 * Localized interface with English, Chinese, and more to come.  
 
->>>>>>> upstream/master
 * Choose from 5 preinstalled responsive library styles, or add your own with CSS.  
 
 * Full Tag support with Namespaces: Add your own or import them from other sources using Plugins.  
 
-<<<<<<< HEAD
-* Store archives in either arbitary or dynamic Categories to sort your Library easily
-=======
 * Store archives in either arbitrary or dynamic Categories to sort your Library easily
->>>>>>> upstream/master
 
 * Import metadata using Plugins automatically when archives are added to LANraragi.
 
